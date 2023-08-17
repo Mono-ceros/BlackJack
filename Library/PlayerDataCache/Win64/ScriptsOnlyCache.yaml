@@ -30,6 +30,7 @@ ScriptsOnlyBuild:
     - UnityEngine.UI.CanvasScaler
     - UnityEngine.UI.GraphicRaycaster
     - UnityEngine.UI.Image
+    - UnityEngine.UI.InputField
     - UnityEngine.UI.Text
   serializedClasses:
     UnityEngine.CoreModule:
@@ -41,16 +42,31 @@ ScriptsOnlyBuild:
     - UnityEngine.UI.Button/ButtonClickedEvent
     - UnityEngine.UI.ColorBlock
     - UnityEngine.UI.FontData
+    - UnityEngine.UI.InputField/EndEditEvent
+    - UnityEngine.UI.InputField/OnChangeEvent
+    - UnityEngine.UI.InputField/SubmitEvent
     - UnityEngine.UI.MaskableGraphic/CullStateChangedEvent
     - UnityEngine.UI.Navigation
     - UnityEngine.UI.SpriteState
   methodsToPreserve:
   - assembly: Assembly-CSharp
     fullTypeName: GameController
-    methodName: Stick
+    methodName: Bet
   - assembly: Assembly-CSharp
     fullTypeName: GameController
-    methodName: EndGame
+    methodName: PlayAgain
+  - assembly: Assembly-CSharp
+    fullTypeName: GameController
+    methodName: Stand
+  - assembly: Assembly-CSharp
+    fullTypeName: GameController
+    methodName: EndApp
+  - assembly: Assembly-CSharp
+    fullTypeName: GameController
+    methodName: HitPlay
+  - assembly: Assembly-CSharp
+    fullTypeName: GameController
+    methodName: NewGame
   sceneClasses:
     Assets/Scenes/Blackjack.unity:
     - Class: 1
@@ -87,6 +103,8 @@ ScriptsOnlyBuild:
       Script: {instanceID: 2964}
     - Class: 114
       Script: {instanceID: 3238}
+    - Class: 114
+      Script: {instanceID: 3304}
     - Class: 114
       Script: {instanceID: 3498}
     - Class: 114
@@ -436,7 +454,7 @@ ScriptsOnlyBuild:
     className: ToggleGroup
   - hash:
       serializedVersion: 2
-      Hash: 206abd0a72e11437944ddd1c7b78a7a4
+      Hash: f615aa2476bfde46ffcf25c1eefaa853
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: GameController

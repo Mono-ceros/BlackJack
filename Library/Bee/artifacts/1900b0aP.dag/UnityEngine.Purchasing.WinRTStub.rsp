@@ -294,7 +294,7 @@
 -r:"C:/Program Files/Unity/Hub/Editor/2021.3.22f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/Variations/mono/Managed/UnityEngine.VRModule.dll"
 -r:"C:/Program Files/Unity/Hub/Editor/2021.3.22f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/Variations/mono/Managed/UnityEngine.WindModule.dll"
 -r:"C:/Program Files/Unity/Hub/Editor/2021.3.22f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/Variations/mono/Managed/UnityEngine.XRModule.dll"
--r:"C:/Users/SAMSUNG/Downloads/20230810_프로젝트1_박수현/Library/PackageCache/com.unity.nuget.newtonsoft-json@3.1.0/Runtime/AOT/Newtonsoft.Json.dll"
+-r:"C:/Users/SAMSUNG/Desktop/LOW 머지용/BlackJack/Library/PackageCache/com.unity.nuget.newtonsoft-json@3.1.0/Runtime/AOT/Newtonsoft.Json.dll"
 -r:"Library/Bee/artifacts/1900b0aP.dag/UnityEngine.Purchasing.WinRTCore.ref.dll"
 -r:"Library/Bee/artifacts/1900b0aP.dag/UnityEngine.UI.ref.dll"
 "Library/PackageCache/com.unity.purchasing@4.7.0/Runtime/WinRTStub/AssemblyInfo.cs"
