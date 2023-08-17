@@ -327,6 +327,8 @@
 -r:"C:/Users/SAMSUNG/Desktop/LOW 머지용/BlackJack/Library/PackageCache/com.unity.analytics@3.6.12/Unity.Analytics.Tracker.dll"
 -r:"C:/Users/SAMSUNG/Desktop/LOW 머지용/BlackJack/Library/PackageCache/com.unity.nuget.newtonsoft-json@3.1.0/Runtime/Newtonsoft.Json.dll"
 -r:"Library/Bee/artifacts/1900b0aEDbg.dag/Analytics.ref.dll"
+-r:"Library/Bee/artifacts/1900b0aEDbg.dag/ParticleImage.Editor.ref.dll"
+-r:"Library/Bee/artifacts/1900b0aEDbg.dag/ParticleImage.ref.dll"
 -r:"Library/Bee/artifacts/1900b0aEDbg.dag/Purchasing.Common.ref.dll"
 -r:"Library/Bee/artifacts/1900b0aEDbg.dag/Unity.2D.Sprite.Editor.ref.dll"
 -r:"Library/Bee/artifacts/1900b0aEDbg.dag/Unity.2D.Tilemap.Editor.ref.dll"

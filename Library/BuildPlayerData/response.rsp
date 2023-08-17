@@ -1,6 +1,7 @@
 -a="C:\Users\SAMSUNG\Desktop\LOW 머지용\BlackJack\Library\PlayerScriptAssemblies\Assembly-CSharp.dll"
 -a="C:\Users\SAMSUNG\Desktop\LOW 머지용\BlackJack\Library\PlayerScriptAssemblies\Purchasing.Common.dll"
 -a="C:\Users\SAMSUNG\Desktop\LOW 머지용\BlackJack\Library\PlayerScriptAssemblies\UnityEngine.Purchasing.dll"
+-a="C:\Users\SAMSUNG\Desktop\LOW 머지용\BlackJack\Library\PlayerScriptAssemblies\ParticleImage.dll"
 -a="C:\Users\SAMSUNG\Desktop\LOW 머지용\BlackJack\Library\PlayerScriptAssemblies\UnityEngine.Purchasing.WinRTCore.dll"
 -a="C:\Users\SAMSUNG\Desktop\LOW 머지용\BlackJack\Library\PlayerScriptAssemblies\Unity.Services.Core.Telemetry.dll"
 -a="C:\Users\SAMSUNG\Desktop\LOW 머지용\BlackJack\Library\PlayerScriptAssemblies\UnityEngine.Purchasing.AppleMacosStub.dll"

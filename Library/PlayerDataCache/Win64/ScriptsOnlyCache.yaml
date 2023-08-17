@@ -6,11 +6,20 @@ ScriptsOnlyBuild:
     - CardStack
     - CardStackView
     - GameController
+    ParticleImage.dll:
+    - AssetKits.ParticleImage.ParticleImage
+    - AssetKits.ParticleImage.ParticleTrailRenderer
+    Unity.2D.Sprite.Editor.dll:
+    - UnityEditor.U2D.Sprites.SpriteEditorWindow
     Unity.2D.Tilemap.Editor.dll:
     - UnityEditor.Tilemaps.GridBrush
+    - UnityEditor.Tilemaps.GridBrushEditor
+    - UnityEditor.Tilemaps.GridPaintPaletteClipboard
+    - UnityEditor.Tilemaps.GridPaintPaletteWindow
     - UnityEditor.Tilemaps.GridPaintingState
     - UnityEditor.Tilemaps.GridPaletteBrushes
     - UnityEditor.Tilemaps.GridPalettes
+    - UnityEditor.Tilemaps.PaintableSceneViewGrid
     - UnityEditor.Tilemaps.SceneViewGridManager
     - UnityEditor.Tilemaps.SceneViewOpenTilePaletteHelper
     - UnityEditor.Tilemaps.TileDragAndDropManager
@@ -18,6 +27,12 @@ ScriptsOnlyBuild:
     - UnityEditor.Tilemaps.TilemapPrefabStageHelper
     Unity.Rider.Editor.dll:
     - Packages.Rider.Editor.UnitTesting.CallbackData
+    UnityEditor.Graphs.dll:
+    - UnityEditor.Graphs.AnimationBlendTree.Graph
+    - UnityEditor.Graphs.AnimationBlendTree.GraphGUI
+    - UnityEditor.Graphs.AnimationStateMachine.Graph
+    - UnityEditor.Graphs.AnimationStateMachine.GraphGUI
+    - UnityEditor.Graphs.AnimatorControllerTool
     UnityEditor.TestRunner.dll:
     - UnityEditor.TestTools.TestRunner.Api.CallbacksHolder
     - UnityEditor.TestTools.TestRunner.TestListCacheData
@@ -31,12 +46,22 @@ ScriptsOnlyBuild:
     - UnityEngine.UI.GraphicRaycaster
     - UnityEngine.UI.Image
     - UnityEngine.UI.InputField
+    - UnityEngine.UI.Mask
     - UnityEngine.UI.Text
   serializedClasses:
+    ParticleImage:
+    - AssetKits.ParticleImage.Burst
+    - AssetKits.ParticleImage.Module
+    - AssetKits.ParticleImage.SeparatedMinMaxCurve
+    - AssetKits.ParticleImage.SpeedRange
     UnityEngine.CoreModule:
     - UnityEngine.Events.ArgumentCache
     - UnityEngine.Events.PersistentCallGroup
     - UnityEngine.Events.PersistentListenerMode
+    - UnityEngine.Events.UnityEvent
+    UnityEngine.ParticleSystemModule:
+    - UnityEngine.ParticleSystem/MinMaxCurve
+    - UnityEngine.ParticleSystem/MinMaxGradient
     UnityEngine.UI:
     - UnityEngine.UI.AnimationTriggers
     - UnityEngine.UI.Button/ButtonClickedEvent
@@ -88,33 +113,39 @@ ScriptsOnlyBuild:
     - Class: 104
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 1560}
+      Script: {instanceID: 1562}
     - Class: 114
-      Script: {instanceID: 1626}
+      Script: {instanceID: 1568}
     - Class: 114
-      Script: {instanceID: 1958}
+      Script: {instanceID: 1636}
     - Class: 114
-      Script: {instanceID: 2018}
+      Script: {instanceID: 1970}
     - Class: 114
-      Script: {instanceID: 2552}
+      Script: {instanceID: 2030}
     - Class: 114
-      Script: {instanceID: 2802}
+      Script: {instanceID: 2278}
     - Class: 114
-      Script: {instanceID: 2964}
+      Script: {instanceID: 2408}
     - Class: 114
-      Script: {instanceID: 3238}
+      Script: {instanceID: 2574}
     - Class: 114
-      Script: {instanceID: 3304}
+      Script: {instanceID: 2824}
     - Class: 114
-      Script: {instanceID: 3498}
+      Script: {instanceID: 2986}
     - Class: 114
-      Script: {instanceID: 3630}
+      Script: {instanceID: 3262}
     - Class: 114
-      Script: {instanceID: 3662}
+      Script: {instanceID: 3328}
     - Class: 114
-      Script: {instanceID: 3666}
+      Script: {instanceID: 3524}
     - Class: 114
-      Script: {instanceID: 5928}
+      Script: {instanceID: 3656}
+    - Class: 114
+      Script: {instanceID: 3688}
+    - Class: 114
+      Script: {instanceID: 3692}
+    - Class: 114
+      Script: {instanceID: 5958}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 124
@@ -152,6 +183,24 @@ ScriptsOnlyBuild:
     assemblyName: UnityEngine.SpatialTracking.dll
     namespaceName: UnityEngine.SpatialTracking
     className: TrackedPoseDriver
+  - hash:
+      serializedVersion: 2
+      Hash: 040dd48e3a027d5424519a5fa2009df4
+    assemblyName: UnityEngine.UI.dll
+    namespaceName: UnityEngine.UI
+    className: ScrollRect
+  - hash:
+      serializedVersion: 2
+      Hash: aba7b2852ef61d175dd9602e7723d5e5
+    assemblyName: UnityEngine.UI.dll
+    namespaceName: UnityEngine.UI
+    className: Mask
+  - hash:
+      serializedVersion: 2
+      Hash: ef5c43f921427d03730f6ea4c848f07d
+    assemblyName: UnityEngine.UI.dll
+    namespaceName: UnityEngine.UI
+    className: RectMask2D
   - hash:
       serializedVersion: 2
       Hash: 1c9b544a0046f8b0a847286c67ff7f99
@@ -274,6 +323,12 @@ ScriptsOnlyBuild:
     className: PanelEventHandler
   - hash:
       serializedVersion: 2
+      Hash: 21e43946ba16b9f36a321b4186746b62
+    assemblyName: ParticleImage.dll
+    namespaceName: AssetKits.ParticleImage
+    className: ParticleImage
+  - hash:
+      serializedVersion: 2
       Hash: c3d3430df9e3ea95e3e3d587961390fb
     assemblyName: Unity.Timeline.dll
     namespaceName: UnityEngine.Timeline
@@ -290,6 +345,12 @@ ScriptsOnlyBuild:
     assemblyName: UnityEngine.Purchasing.Stores.dll
     namespaceName: UnityEngine.Purchasing
     className: LifecycleNotifier
+  - hash:
+      serializedVersion: 2
+      Hash: f40fedccd4adbc76605bea6d67537e4b
+    assemblyName: ParticleImage.dll
+    namespaceName: AssetKits.ParticleImage
+    className: ParticleTrailRenderer
   - hash:
       serializedVersion: 2
       Hash: 91d258529db2b5060a913f2afcea1a21
@@ -454,7 +515,7 @@ ScriptsOnlyBuild:
     className: ToggleGroup
   - hash:
       serializedVersion: 2
-      Hash: f615aa2476bfde46ffcf25c1eefaa853
+      Hash: 0efe65f1c077b9eb3fbff8465cfab5b9
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: GameController
@@ -598,12 +659,6 @@ ScriptsOnlyBuild:
     className: SignalTrack
   - hash:
       serializedVersion: 2
-      Hash: aba7b2852ef61d175dd9602e7723d5e5
-    assemblyName: UnityEngine.UI.dll
-    namespaceName: UnityEngine.UI
-    className: Mask
-  - hash:
-      serializedVersion: 2
       Hash: c3d3430df9e3ea95e3e3d587961390fb
     assemblyName: Unity.Timeline.dll
     namespaceName: UnityEngine.Timeline
@@ -622,12 +677,6 @@ ScriptsOnlyBuild:
     className: SignalReceiver
   - hash:
       serializedVersion: 2
-      Hash: 040dd48e3a027d5424519a5fa2009df4
-    assemblyName: UnityEngine.UI.dll
-    namespaceName: UnityEngine.UI
-    className: ScrollRect
-  - hash:
-      serializedVersion: 2
       Hash: 18c222bef9ae745ce69ddde9b74337ca
     assemblyName: UnityEngine.UI.dll
     namespaceName: UnityEngine.EventSystems
@@ -638,12 +687,6 @@ ScriptsOnlyBuild:
     assemblyName: Unity.Timeline.dll
     namespaceName: UnityEngine.Timeline
     className: ControlPlayableAsset
-  - hash:
-      serializedVersion: 2
-      Hash: ef5c43f921427d03730f6ea4c848f07d
-    assemblyName: UnityEngine.UI.dll
-    namespaceName: UnityEngine.UI
-    className: RectMask2D
   - hash:
       serializedVersion: 2
       Hash: 87ad3705a58f19c47136728d4a6e9c47

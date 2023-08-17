@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using AssetKits.ParticleImage;
 
 public class GameController : MonoBehaviour 
 {
@@ -18,7 +19,14 @@ public class GameController : MonoBehaviour
     public GameObject resultGroup;
     public GameObject playButtonPanel;
     public GameObject gameOverPanel;
-    public GameObject PlayAgainButton;
+    public GameObject playAgainButton;
+    public GameObject x2;
+    public GameObject x3;
+    public GameObject x0;
+    //public ParticleImage x2;
+    //public ParticleImage x2Chip;
+    //public ParticleImage x3;
+    //public ParticleImage x3Chip;
 
     public InputField inputField;
     string inputFieldText;
@@ -36,6 +44,7 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
+        Screen.fullScreen = true;
         highScore = PlayerPrefs.GetInt("HighScore");
         highScoreText.text = highScore.ToString();
     }
@@ -76,6 +85,9 @@ public class GameController : MonoBehaviour
         betGroup.SetActive(false);
         currentChip -= bettingChip;
         currentChipText.text = currentChip.ToString();
+        x0Off();
+        X2Off();
+        X3Off();
         StartGame();
     }
 
@@ -101,6 +113,7 @@ public class GameController : MonoBehaviour
             PlayButtonOff();
             winnerText.text = "버스트";
             resultChipText.text = "칩 +0";
+            X0On();
             HighScoreUpdate();
 
             StartCoroutine(IsGameOver());
@@ -113,10 +126,10 @@ public class GameController : MonoBehaviour
         {
             PlayButtonOff();
             winnerText.text = "블랙잭";
-            float tempnumber = bettingChip * 2.5f;
-            resultChipText.text = "칩 +" + (int)Mathf.Round(tempnumber);
-            currentChip += (int)Mathf.Round(tempnumber);
+            resultChipText.text = "칩 +" + bettingChip * 3;
+            currentChip += bettingChip * 3;
             HighScoreUpdate();
+            X3On();
             ResultOn();
         }
     }
@@ -133,12 +146,14 @@ public class GameController : MonoBehaviour
         {
             winnerText.text = "패배";
             resultChipText.text = "칩 +0";
+            X0On();
         }
         else if (dealer.HandValue() > 21 || (player.HandValue() <= 21 && player.HandValue() > dealer.HandValue()))
         {
             winnerText.text = "승리";
             resultChipText.text = "칩 +" + (bettingChip * 2);
             currentChip += bettingChip * 2;
+            X2On();
         }
     }
 
@@ -148,10 +163,10 @@ public class GameController : MonoBehaviour
         {
             winnerText.text = "파산";
             ResultOn();
-            PlayAgainButton.SetActive(false);
+            playAgainButton.SetActive(false);
             yield return new WaitForSeconds(1f);
             ResultOff();
-            PlayAgainButton.SetActive(true);
+            playAgainButton.SetActive(true);
             gameOverPanel.SetActive(true);
         }
         else
@@ -184,6 +199,37 @@ public class GameController : MonoBehaviour
     {
         resultGroup.SetActive(false);
     }
+
+    void X0On()
+    {
+        x0.SetActive(true);
+    }
+
+    void x0Off()
+    {
+        x0.SetActive(false);
+    }
+
+    void X2On()
+    {
+        x2.SetActive(true);
+    }
+
+    void X2Off()
+    {
+        x2.SetActive(false);
+    }
+
+    void X3On()
+    {
+        x3.SetActive(true);
+    }
+
+    void X3Off()
+    {
+        x3.SetActive(false);
+    }
+
     #endregion
 
     #region Dealer
@@ -223,7 +269,7 @@ public class GameController : MonoBehaviour
         OutCome();
         HighScoreUpdate();
         StartCoroutine(IsGameOver());
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(1.5f);
     }
 
     #endregion
