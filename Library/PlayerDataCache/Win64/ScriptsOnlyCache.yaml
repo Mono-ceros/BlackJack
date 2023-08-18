@@ -13,7 +13,6 @@ ScriptsOnlyBuild:
     - UnityEditor.U2D.Sprites.SpriteEditorWindow
     Unity.2D.Tilemap.Editor.dll:
     - UnityEditor.Tilemaps.GridBrush
-    - UnityEditor.Tilemaps.GridBrushEditor
     - UnityEditor.Tilemaps.GridPaintPaletteClipboard
     - UnityEditor.Tilemaps.GridPaintPaletteWindow
     - UnityEditor.Tilemaps.GridPaintingState
@@ -515,7 +514,7 @@ ScriptsOnlyBuild:
     className: ToggleGroup
   - hash:
       serializedVersion: 2
-      Hash: 0efe65f1c077b9eb3fbff8465cfab5b9
+      Hash: 14d870dcceaa076f84937b1ce7f05782
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: GameController

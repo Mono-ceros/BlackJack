@@ -23,10 +23,6 @@ public class GameController : MonoBehaviour
     public GameObject x2;
     public GameObject x3;
     public GameObject x0;
-    //public ParticleImage x2;
-    //public ParticleImage x2Chip;
-    //public ParticleImage x3;
-    //public ParticleImage x3Chip;
 
     public InputField inputField;
     string inputFieldText;
@@ -40,13 +36,18 @@ public class GameController : MonoBehaviour
     public Text logText;
     public Text resultChipText;
     public Text highScoreText;
+    public Text mulChipText;
     int highScore = 0;
 
     private void Start()
     {
-        Screen.fullScreen = true;
         highScore = PlayerPrefs.GetInt("HighScore");
         highScoreText.text = highScore.ToString();
+    }
+
+    private void Awake()
+    {
+         Screen.SetResolution(1920, 1080, true);
     }
 
     #region Button
@@ -68,8 +69,6 @@ public class GameController : MonoBehaviour
 
     public void Stand()
     {
-        hitButton.interactable = false;
-        stickButton.interactable = false;
         StartCoroutine(DealersTurn());
     }
 
@@ -111,11 +110,8 @@ public class GameController : MonoBehaviour
         if (player.HandValue() > 21)
         {
             PlayButtonOff();
-            winnerText.text = "버스트";
-            resultChipText.text = "칩 +0";
-            X0On();
+            SwitchResult(4);
             HighScoreUpdate();
-
             StartCoroutine(IsGameOver());
         }
     }
@@ -125,11 +121,8 @@ public class GameController : MonoBehaviour
         if (player.HandValue() == 21)
         {
             PlayButtonOff();
-            winnerText.text = "블랙잭";
-            resultChipText.text = "칩 +" + bettingChip * 3;
-            currentChip += bettingChip * 3;
+            SwitchResult(3);
             HighScoreUpdate();
-            X3On();
             ResultOn();
         }
     }
@@ -138,22 +131,53 @@ public class GameController : MonoBehaviour
     {
         if (dealer.HandValue() == player.HandValue())
         {
-            winnerText.text = "무승부";
-            resultChipText.text = "칩 +" + bettingChip;
-            currentChip += bettingChip;
+            SwitchResult(1);
         }
-        else if (dealer.HandValue() >= player.HandValue() && dealer.HandValue() <= 21)
+        else if (dealer.HandValue() > player.HandValue() && dealer.HandValue() <= 21)
         {
-            winnerText.text = "패배";
-            resultChipText.text = "칩 +0";
-            X0On();
+            SwitchResult(0);
         }
-        else if (dealer.HandValue() > 21 || (player.HandValue() <= 21 && player.HandValue() > dealer.HandValue()))
+        else if (dealer.HandValue() > 21 || player.HandValue() > dealer.HandValue())
         {
-            winnerText.text = "승리";
-            resultChipText.text = "칩 +" + (bettingChip * 2);
-            currentChip += bettingChip * 2;
-            X2On();
+            SwitchResult(2);
+        }
+    }
+
+    void SwitchResult(int resultint)
+    {
+        switch (resultint)
+        {
+            case 0:
+                winnerText.text = "패배";
+                resultChipText.text = "칩 +0";
+                mulChipText.text = "X0";
+                X0On();
+                break;
+            case 1:
+                winnerText.text = "무승부";
+                resultChipText.text = "칩 +" + bettingChip;
+                currentChip += bettingChip;
+                break;
+            case 2:
+                winnerText.text = "승리";
+                resultChipText.text = "칩 +" + (bettingChip * 2);
+                mulChipText.text = "X2";
+                currentChip += bettingChip * 2;
+                X2On();
+                break;
+            case 3:
+                winnerText.text = "블랙잭";
+                resultChipText.text = "칩 +" + bettingChip * 3;
+                mulChipText.text = "X3";
+                currentChip += bettingChip * 3;
+                X3On();
+                break;
+            case 4:
+                winnerText.text = "버스트";
+                resultChipText.text = "칩 +0";
+                mulChipText.text = "X0";
+                X0On();
+                break;
         }
     }
 
@@ -257,19 +281,42 @@ public class GameController : MonoBehaviour
         CardStackView view = dealer.GetComponent<CardStackView>();
         view.Toggle(dealersFirstCard, true);
         view.ShowCards();
+
         yield return new WaitForSeconds(1f);
 
-        //딜러 패가 17이상이 될때까지 딜러히트
-        while (dealer.HandValue() < 17)
-        {
-            HitDealer();
-            yield return new WaitForSeconds(1f);
-        }
 
-        OutCome();
-        HighScoreUpdate();
-        StartCoroutine(IsGameOver());
-        yield return new WaitForSeconds(1.5f);
+        if (dealer.HandValue() > player.HandValue())
+        {
+            SwitchResult(0);
+            StartCoroutine(IsGameOver());
+            yield return new WaitForSeconds(1.5f);
+        }
+        else
+        {
+            //딜러가 이긴건 아닌데 17이 넘는 경우
+            //딜러 패가 17이상이 될때까지 딜러히트
+            while (dealer.HandValue() < 17)
+            {
+                HitDealer();
+                if (dealer.HandValue() > player.HandValue() && dealer.HandValue() <= 21)
+                {
+                    SwitchResult(0);
+                    StartCoroutine(IsGameOver());
+                    yield return new WaitForSeconds(1.5f);
+                    break;
+                }
+                yield return new WaitForSeconds(1f);
+            }
+
+            if (!resultGroup.activeInHierarchy && !playAgainButton.activeInHierarchy)
+            {
+                OutCome();
+                HighScoreUpdate();
+                StartCoroutine(IsGameOver());
+                yield return new WaitForSeconds(1.5f);
+            }
+            
+        }
     }
 
     #endregion
@@ -303,6 +350,7 @@ public class GameController : MonoBehaviour
     public void PlayAgain()
     {
         bettingChipText.text = "0";
+        mulChipText.text = "";
         currentChipText.text = currentChip.ToString();
         player.GetComponent<CardStackView>().Clear();
         dealer.GetComponent<CardStackView>().Clear();
@@ -310,10 +358,6 @@ public class GameController : MonoBehaviour
         deck.CreateDeck();
         ResultOff();
         betGroup.SetActive(true);
-
-        hitButton.interactable = true;
-        stickButton.interactable = true;
-
         dealersFirstCard = -1;
     }
 
