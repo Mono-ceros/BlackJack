@@ -313,16 +313,10 @@
 -r:"Library/Bee/artifacts/1900b0aP.dag/UnityEngine.UI.ref.dll"
 -r:"Library/Bee/artifacts/1900b0aP.dag/UnityEngine.XR.LegacyInputHelpers.ref.dll"
 "Assets/Scripts/CardEventArgs.cs"
-"Assets/Scripts/CardEventDelegate.cs"
-"Assets/Scripts/CardFlipper.cs"
 "Assets/Scripts/CardModel.cs"
 "Assets/Scripts/CardStack.cs"
 "Assets/Scripts/CardStackView.cs"
 "Assets/Scripts/CardView.cs"
-"Assets/Scripts/DebugChangeCard.cs"
-"Assets/Scripts/DebugDealer.cs"
-"Assets/Scripts/DebugDrag.cs"
-"Assets/Scripts/DebugStacker.cs"
 "Assets/Scripts/GameController.cs"
 -langversion:9.0
 
