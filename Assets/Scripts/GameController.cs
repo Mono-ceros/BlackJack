@@ -5,7 +5,7 @@ using AssetKits.ParticleImage;
 
 public class GameController : MonoBehaviour 
 {
-    //멀티로실제 카지노 블랙잭 테이블처럼 딜러있는거 그대로 쓰고
+    //멀티로 실제 카지노 블랙잭 테이블처럼 딜러있는거 그대로 쓰고
     //최대 4명까지 방 만들어서
     //칩 제일 많이 딴놈이 1등
     //포톤 서버 연결하고 db쓰고
@@ -14,9 +14,10 @@ public class GameController : MonoBehaviour
     //스프라이트 핸드폰에 있는 롤포커카드 이미지로 바꿔도 될듯
     //가시성이 좀 떨어질거같긴한데
 
-    //-1일때 뒷면이라
+    //첫카드 검출하고 값 저장할 변수
     int dealersFirstCard = -1;
     int currentChip = 100;
+    int highScore = 0;
 
     public CardStack player;
     public CardStack dealer;
@@ -26,12 +27,13 @@ public class GameController : MonoBehaviour
     public CardStackView dealerView;
     public CardStackView deckView;
 
-    public Button hitButton;
-    public Button stickButton;
 
     //무식하게 껏다켯다하는게 맞는지 모르겠네
     //하위 오브젝트가 많은것도 아니고, 생성 파괴를 하는것도 아니긴한데 몬가
     //파티클도 그냥 껏다켰다하는게 편해서 이래놓기는 했는데
+    [Header("UI")]
+    public Button hitButton;
+    public Button stickButton;
     public GameObject betGroup;
     public GameObject resultGroup;
     public GameObject playButtonPanel;
@@ -40,11 +42,9 @@ public class GameController : MonoBehaviour
     public GameObject x2;
     public GameObject x3;
     public GameObject x0;
-
     public InputField inputField;
     string inputFieldText;
     int bettingChip;
-
     public Text winnerText;
     public Text playerHandValueText;
     public Text dealerHandValueText;
@@ -54,9 +54,6 @@ public class GameController : MonoBehaviour
     public Text resultChipText;
     public Text highScoreText;
     public Text mulChipText;
-
-    int highScore = 0;
-
 
     private void Start()
     {
@@ -77,13 +74,18 @@ public class GameController : MonoBehaviour
         StartCoroutine(Hit());
     }
 
+    //내 패가 12인경우라도 : 딜러 공개패 4,5,6일시 스탑
+    //내 패가 13~16 : 딜러 공개패 2~6일떄 스탑(딜러 버스트 확률이 높기 때문)
+    //내 패가 17~20 : 딜러 공개패가 9~a이고 내 패에 11점의 a가 있을시 히트
+
+    //내 패가 10,11일시 한장만 더 받는다는 조건으로 판돈 두배(더블다운)하는게 유리
     IEnumerator Hit()
     {
         //실행되는동안 버튼 비활성화
         hitButton.interactable = false;
         stickButton.interactable = false;
         //덱에서 뽑은 카드를 플레이어한테 추가
-        player.Draw(deck.Top());
+        player.Draw(deck.DeckTop());
         yield return new WaitForSeconds(0.5f);
         //내 패 21넘었는지 체크
         Burst();
@@ -116,6 +118,7 @@ public class GameController : MonoBehaviour
         currentChip -= bettingChip;
         currentChipText.text = currentChip.ToString();
 
+        //겜 시작하고 전판 파티클이 남으면 안되니까
         x0Off();
         X2Off();
         X3Off();
@@ -129,6 +132,7 @@ public class GameController : MonoBehaviour
     public void NewGame()
     {
         gameOverPanel.SetActive(false);
+        //칩 초기화
         currentChip = 100;
         PlayAgain();
     }
@@ -145,13 +149,15 @@ public class GameController : MonoBehaviour
         bettingChipText.text = "0";
         mulChipText.text = "";
         currentChipText.text = currentChip.ToString();
+        //게임 초기화
         playerView.Clear();
         dealerView.Clear();
         deckView.Clear();
         deck.CreateDeck();
+        dealersFirstCard = -1;
+        //UI패널 변경
         ResultOff();
         betGroup.SetActive(true);
-        dealersFirstCard = -1;
     }
 
     #endregion
@@ -212,7 +218,7 @@ public class GameController : MonoBehaviour
                 break;
             case 2:
                 winnerText.text = "승리";
-                resultChipText.text = "칩 +" + (bettingChip * 2);
+                resultChipText.text = "칩 +" + bettingChip * 2;
                 mulChipText.text = "X2";
                 currentChip += bettingChip * 2;
                 X2On();
@@ -229,6 +235,19 @@ public class GameController : MonoBehaviour
                 resultChipText.text = "칩 +0";
                 mulChipText.text = "X0";
                 X0On();
+                break;
+            case 5:
+                winnerText.text = "딜러 블랙잭";
+                resultChipText.text = "칩 +0";
+                mulChipText.text = "X0";
+                X0On();
+                break;
+            case 6:
+                winnerText.text = "파이브 카드 찰리";
+                resultChipText.text = "칩 +" + bettingChip * 2;
+                mulChipText.text = "X2";
+                currentChip += bettingChip * 2;
+                X2On();
                 break;
         }
     }
@@ -313,7 +332,7 @@ public class GameController : MonoBehaviour
 
     void HitDealer()
     {
-        int card = deck.Top();
+        int card = deck.DeckTop();
 
         //딜러 첫번째 뒷면 카드를
         //게임이 끝날때 앞면으로 만들기 위해서 변수에 저장
@@ -345,7 +364,19 @@ public class GameController : MonoBehaviour
 
 
         //딜러가 히트하기 전에 졌으면 패배
-        if (dealer.HandValue() > player.HandValue())
+        if(dealer.HandValue() == 21)
+        {
+            SwitchResult(5);
+            StartCoroutine(IsGameOver());
+            yield return new WaitForSeconds(1.5f);
+        }
+        else if(player.CardCount >= 5)
+        {
+            SwitchResult(6);
+            StartCoroutine(IsGameOver());
+            yield return new WaitForSeconds(1.5f);
+        }
+        else if (dealer.HandValue() > player.HandValue())
         {
             SwitchResult(0);
             StartCoroutine(IsGameOver());
@@ -403,7 +434,7 @@ public class GameController : MonoBehaviour
         //플래이어 딜러 카드 2장씩
         for (int i = 0; i < 2; i++)
         {
-            player.Draw(deck.Top());
+            player.Draw(deck.DeckTop());
             HitDealer();
         }
 

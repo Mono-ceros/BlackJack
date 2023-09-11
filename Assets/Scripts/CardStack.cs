@@ -10,18 +10,14 @@ using Random = UnityEngine.Random;
 /// </summary>
 public class CardStack : MonoBehaviour
 {
-    //결국에는 처음에 만들것과 그 기능을 구현하기 위한 구조를 어떻게 짜느냐에따라
-    //작업 결과물의 퀄리티가 많이 달라지기는 하네
-    //기획의 중요성은 알겠는데
-    //솔직히 아는게 있어야 처음부터 잘 짜지
-
-    //컬렉션(유연한 개체 그룹)
+    //arraylist 좀 히튼데
+    //한번에 여러 자료형을 담을수있는 리스트인 대신 좀 느림
 
     //덱은 모든 카드값을 다 담은 리스트
     //플레이어와 딜러는 뽑은 카드값 리스트
     List<int> cards;
 
-    //게임덱인지 아닌지 체크
+    //인스펙터에서 덱만 트루로
     public bool isGameDeck;
 
     CardStackView cardStackView;
@@ -34,7 +30,6 @@ public class CardStack : MonoBehaviour
 
     //action은 매개변수가 없고 값을 반환하지 않는 함수를 캡슐화할때 쓰는것
     //단 이런식으로 제네릭 안에 미리 정의 한채로 만들면 반환값이 없는건 사용가능
-    //예시로 액션으로 만들어본것
     public event Action<object, CardEventArgs> CardRemoved;
 
     public event CardEvent CardAdded;
@@ -52,6 +47,32 @@ public class CardStack : MonoBehaviour
             CreateDeck();
         }
 	}
+
+    //유용한 프로퍼티들
+    public bool HasCards
+    {
+        get { return cards != null && cards.Count > 0; }
+    }
+
+    /// <summary>
+    /// 널일때 0반환
+    /// </summary>
+    public int CardCount
+    {
+        get
+        {
+            //카운트류들은 이 프로퍼티를 달아주는게
+            //무조건 좋을듯
+            if (cards == null)
+            {
+                return 0;
+            }
+            else
+            {
+                return cards.Count;
+            }
+        }
+    }
 
     /// <summary>
     /// 덱 리스트 값넣고 섞기
@@ -84,49 +105,19 @@ public class CardStack : MonoBehaviour
         cardStackView.MakeDeckAndFaceUpUpdate();
     }
 
-    //유용한 프로퍼티들
-    public bool HasCards
-    {
-        get { return cards != null && cards.Count > 0; }
-    }
+
 
     /// <summary>
-    /// 널일때 0반환
-    /// </summary>
-    public int CardCount
-    {
-        get
-        {
-            //카운트류들은 이 프로퍼티를 달아주는게
-            //무조건 좋을듯
-            if (cards == null)
-            {
-                return 0;
-            }
-            else
-            {
-                return cards.Count;
-            }
-        }
-    }
-
-    public bool HasCard(int cardId)
-    {
-        //FindIndex는 주어진 조건을 만족하는 첫번째 인덱스값을 반환하는 메서드
-        //predicate<int>를 사용해 콜백으로 값을 건내줌
-        //해당하는 값이 없으면 -1을 반환하므로 false
-        //리스트에 찾는 값이 존재하면 0보다 크거나 같을것이기 때문에
-        //true를 반환하여 리스트에 값이 존재하는지를 체크
-        return cards.FindIndex(i => i == cardId) >= 0;
-    }
-
-    /// <summary>
-    /// 플레이어, 딜러의 리스트값이 필요할때
-    /// foreach에서 돌릴거임
+    /// 보안을 위해 리스트 원본은 private로 두고
+    /// 이걸 다른 스크립트에서 사용
     /// </summary>
     /// <returns></returns>
     public IEnumerable<int> GetCards()
     {
+        //다른곳에서도 열거형으로 사용하고싶을때 IEnumerable<> 제네릭으로 넣고싶은 타입
+        //넣어서 쓸수있고 스스로 만든 클래스에 IEnumerable인터페이스 구현해서 쓰면됨
+        //ex public IEnumerator GetEnumerator()
+        //   {return 반환하고싶은 IEnumerator변수.GetEnumerator();}
         foreach (int i in cards)
         {
             yield return i;
@@ -138,7 +129,7 @@ public class CardStack : MonoBehaviour
     /// 덱의 첫번째 카드 인덱스 리턴 후 삭제
     /// </summary>
     /// <returns></returns>
-    public int Top()
+    public int DeckTop()
     {
         //첫번째 인덱스값 저장
         int temp = cards[0];
@@ -158,7 +149,7 @@ public class CardStack : MonoBehaviour
 
         //첫번째 인덱스의 카드 Destroy
         CardRemoved?.Invoke(this, new CardEventArgs(temp));
-
+        
         // int cnt = row?.Count ?? 0;
         // ??로 널일때 값도 정해줄수있음
 
@@ -248,15 +239,13 @@ public class CardStack : MonoBehaviour
         cards.Clear();
     }
 
-    //시퀀스란
-    //알고리즘 내에서 정해져있는 순서
-
-    //컨텍스트
-    //어떤 목적(이벤트등)에 필요한 데이터의 모음(조건)
-
-    //API란
-    //소프트웨어 둘이 통신할수있게 해주는 매커니즘
-    //서버와 클라이언트역할이 정해져 있음
-
-
+    public bool HasCard(int cardId)
+    {
+        //FindIndex는 주어진 조건을 만족하는 첫번째 인덱스값을 반환하는 메서드
+        //predicate<int>를 사용해 콜백으로 값을 건내줌
+        //해당하는 값이 없으면 -1을 반환하므로 false
+        //리스트에 찾는 값이 존재하면 0보다 크거나 같을것이기 때문에
+        //true를 반환하여 리스트에 값이 존재하는지를 체크
+        return cards.FindIndex(i => i == cardId) >= 0;
+    }
 }

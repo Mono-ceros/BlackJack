@@ -32,5 +32,4 @@ public class CardModel : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
-
 }

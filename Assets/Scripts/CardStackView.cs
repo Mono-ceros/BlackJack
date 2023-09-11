@@ -29,6 +29,7 @@ public class CardStackView : MonoBehaviour
     //인스펙터창에서 제어
     //기본값 초기화만 해놓은것
     public bool makefaceUp = false;
+    public bool decksorting = false;
 
     //카드프리팹 할당해주기
     public GameObject cardPrefab;
@@ -73,11 +74,7 @@ public class CardStackView : MonoBehaviour
     }
 
 
-    /// <summary>
-    /// 이벤트에 담아서 푸쉬에서 씀
-    /// </summary>
-    /// <param name="cardOwner"></param>
-    /// <param name="e"></param>
+    #region 이벤트 안에 넣을 메소드
     void P_D_CardAdded(object cardOwner, CardEventArgs e)
     {
         //카드간 간격
@@ -88,23 +85,18 @@ public class CardStackView : MonoBehaviour
         AddCard(temp, e.CardIndex, deck.CardCount);
     }
 
-    
-    /// <summary>
-    /// 이벤트에 담아서 팝에서 씀
-    /// </summary>
-    /// <param name="cardOwner"></param>
-    /// <param name="e"></param>
     void deck_CardRemoved(object cardOwner, CardEventArgs e)
     {
         //키에 값이 존재하면
         if (faceUpControl.ContainsKey(e.CardIndex))
         {
-            //카드 파괴(여기 있는 카드를 파괴하고 플레이어에게 생성해 카드를 뽑은 판정)
+            //카드 파괴(여기 있는 카드를 파괴하고 플레이어에게 생성해 카드를 뽑은것을 구현)
             Destroy(faceUpControl[e.CardIndex].Card);
 
             faceUpControl.Remove(e.CardIndex);
         }
     }
+    #endregion
 
     //덱에 있는 이게 널을 뱉는거같은데
     //업데이트 돌렸을때는 멀쩡했는데
@@ -139,7 +131,7 @@ public class CardStackView : MonoBehaviour
         if (faceUpControl.ContainsKey(cardIndex))
         {
             //뒷면으로 만들어진것들 IsFaceUp 체크해서 뒤집어야 할때 뒤집어줌
-            //showcard에 업데이트 돌고있음
+            //ToggleFace가 필요할때 호출
             if (!makefaceUp)
             {
                 CardModel model = faceUpControl[cardIndex].Card.GetComponent<CardModel>();
@@ -155,6 +147,7 @@ public class CardStackView : MonoBehaviour
         //만들어진 카드 오브젝트의 카드 모델 스크립트 참조
         CardModel cardModel = cardCopy.GetComponent<CardModel>();
         //모델 스프라이트 번호 전달
+        //리스트에서 인덱스를 섞어놔도 스프라이트는 잘 저장됨
         cardModel.cardIndex = cardIndex;
         //플레이어는 makefaceUp이 트루라 앞면
         //덱과 딜러는 뒤집어져있어야하니 펄스 뒷면
@@ -167,7 +160,17 @@ public class CardStackView : MonoBehaviour
         //sortingOrder로 sorting Layer를 설정
         //숫자가 큰놈이 위로 감
         //리스트 카운트로 레이어 설정해서 나중에 오는 놈이 위로오도록
-        spriteRenderer.sortingOrder = positionalIndex;
+        if(decksorting)
+        {
+            //덱은 리스트 0번인덱스부터 뽑아서 위치 반대로 놔야 자연스러움
+            spriteRenderer.sortingOrder = deck.CardCount - positionalIndex;
+        }
+        else
+        {
+            spriteRenderer.sortingOrder = positionalIndex;
+        }
+        
+
 
         //애드된 카드 오브젝트를 딕셔너리에 추가
         faceUpControl.Add(cardIndex, new CardView(cardCopy));
