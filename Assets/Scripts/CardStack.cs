@@ -35,7 +35,7 @@ public class CardStack : MonoBehaviour
     public event CardEvent CardAdded;
 
 
-	void Awake() 
+	void OnEnable() 
     {
         cards = new List<int>();
         cardStackView = GetComponent<CardStackView>();
@@ -58,6 +58,7 @@ public class CardStack : MonoBehaviour
     /// 널일때 0반환
     /// </summary>
     public int CardCount
+
     {
         get
         {

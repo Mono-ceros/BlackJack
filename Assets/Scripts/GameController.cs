@@ -2,22 +2,18 @@
 using System.Collections;
 using UnityEngine.UI;
 using AssetKits.ParticleImage;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour 
 {
-    //멀티로 실제 카지노 블랙잭 테이블처럼 딜러있는거 그대로 쓰고
-    //최대 4명까지 방 만들어서
-    //칩 제일 많이 딴놈이 1등
-    //포톤 서버 연결하고 db쓰고
-    //채팅 넣고
-
-    //스프라이트 핸드폰에 있는 롤포커카드 이미지로 바꿔도 될듯
-    //가시성이 좀 떨어질거같긴한데
-
     //첫카드 검출하고 값 저장할 변수
+    //숫자 저장해야해서 불 말고 인트
     int dealersFirstCard = -1;
+
     int currentChip = 100;
     int highScore = 0;
+    //방에 따른 칩 배율
+    //int roomclass = 1;
 
     public CardStack player;
     public CardStack dealer;
@@ -27,18 +23,18 @@ public class GameController : MonoBehaviour
     public CardStackView dealerView;
     public CardStackView deckView;
 
-
-    //무식하게 껏다켯다하는게 맞는지 모르겠네
-    //하위 오브젝트가 많은것도 아니고, 생성 파괴를 하는것도 아니긴한데 몬가
-    //파티클도 그냥 껏다켰다하는게 편해서 이래놓기는 했는데
+    //하위 오브젝트가 많은것도 아니고, 생성 파괴를 하는것도 아니긴한데
+    //무식하게 껏다켯다하는게 괜찮은지 모르겠네
     [Header("UI")]
     public Button hitButton;
     public Button stickButton;
+    public GameObject soloEndButton;
+    public GameObject playAgainButton;
     public GameObject betGroup;
     public GameObject resultGroup;
     public GameObject playButtonPanel;
     public GameObject gameOverPanel;
-    public GameObject playAgainButton;
+    public CanvasGroup playRoleScroll;
     public GameObject x2;
     public GameObject x3;
     public GameObject x0;
@@ -55,20 +51,26 @@ public class GameController : MonoBehaviour
     public Text highScoreText;
     public Text mulChipText;
 
-    private void Start()
+    bool isclick = true;
+
+    private void OnEnable()
     {
         //최고기록 들고오기
         highScore = PlayerPrefs.GetInt("HighScore");
+        if(PlayerPrefs.GetInt("CurrentChip") == 0)
+        {
+            currentChip = 100;
+        }
+        else
+        {
+            currentChip = PlayerPrefs.GetInt("CurrentChip");
+        }
         highScoreText.text = highScore.ToString();
-    }
-
-    private void Awake()
-    {
-        //풀스크린
-         Screen.SetResolution(1920, 1080, true);
+        currentChipText.text = currentChip.ToString();
     }
 
     #region 버튼온클릭
+
     public void HitPlay()
     {
         StartCoroutine(Hit());
@@ -107,15 +109,18 @@ public class GameController : MonoBehaviour
         //변환 실패시 out에 0
         int.TryParse(inputFieldText, out bettingChip);
         //currentChip이하의 올바른 숫자가 아니면 반환
+        //잘되던게 10배수 조건거니까 안되네
         if (bettingChip > currentChip || bettingChip <= 0)
         {
             logText.text = "올바른 배팅이 아닙니다.";
             return;
         }
+        soloEndButton.SetActive(false);
         //배팅 UI 끔
         betGroup.SetActive(false);
         //배팅칩 까줌
         currentChip -= bettingChip;
+        PlayerPrefs.SetInt("CurrentChip", currentChip);
         currentChipText.text = currentChip.ToString();
 
         //겜 시작하고 전판 파티클이 남으면 안되니까
@@ -134,13 +139,22 @@ public class GameController : MonoBehaviour
         gameOverPanel.SetActive(false);
         //칩 초기화
         currentChip = 100;
+        PlayerPrefs.SetInt("CurrentChip", currentChip);
         PlayAgain();
     }
 
-    //게임종료버튼
-    public void EndApp()
+    public void SoloEnd()
     {
-        Application.Quit();
+        SceneManager.LoadScene("Lobby");
+    }
+
+    public void RoleRead()
+    {
+        playRoleScroll.alpha = (isclick ? 1 : 0);
+        playRoleScroll.interactable = isclick;
+        playRoleScroll.blocksRaycasts = isclick;
+
+        isclick = isclick ? false : true;
     }
 
    //다음 배팅 버튼
@@ -158,6 +172,7 @@ public class GameController : MonoBehaviour
         //UI패널 변경
         ResultOff();
         betGroup.SetActive(true);
+        soloEndButton.SetActive(true);
     }
 
     #endregion
@@ -174,14 +189,29 @@ public class GameController : MonoBehaviour
         }
     }
 
-    void BackJack()
+    IEnumerator BackJack()
     {
         if (player.HandValue() == 21)
         {
             PlayButtonOff();
-            SwitchResult(3);
-            HighScoreUpdate();
-            ResultOn();
+            dealerView.Toggle(dealersFirstCard, true);
+            dealerView.MakeDeckAndFaceUpUpdate();
+            yield return new WaitForSeconds(1f);
+
+            //딜러도 블랙잭이면 무승부
+            if (dealer.HandValue() == 21)
+            {
+                SwitchResult(1);
+                ResultOn();
+                yield return new WaitForSeconds(1.5f);
+            }
+            else
+            {
+                SwitchResult(3);
+                HighScoreUpdate();
+                ResultOn();
+                yield return new WaitForSeconds(1.5f);
+            }
         }
     }
 
@@ -215,12 +245,14 @@ public class GameController : MonoBehaviour
                 winnerText.text = "무승부";
                 resultChipText.text = "칩 +" + bettingChip;
                 currentChip += bettingChip;
+                PlayerPrefs.SetInt("CurrentChip", currentChip);
                 break;
             case 2:
                 winnerText.text = "승리";
                 resultChipText.text = "칩 +" + bettingChip * 2;
                 mulChipText.text = "X2";
                 currentChip += bettingChip * 2;
+                PlayerPrefs.SetInt("CurrentChip", currentChip);
                 X2On();
                 break;
             case 3:
@@ -228,6 +260,7 @@ public class GameController : MonoBehaviour
                 resultChipText.text = "칩 +" + bettingChip * 3;
                 mulChipText.text = "X3";
                 currentChip += bettingChip * 3;
+                PlayerPrefs.SetInt("CurrentChip", currentChip);
                 X3On();
                 break;
             case 4:
@@ -247,6 +280,7 @@ public class GameController : MonoBehaviour
                 resultChipText.text = "칩 +" + bettingChip * 2;
                 mulChipText.text = "X2";
                 currentChip += bettingChip * 2;
+                PlayerPrefs.SetInt("CurrentChip", currentChip);
                 X2On();
                 break;
         }
@@ -439,7 +473,7 @@ public class GameController : MonoBehaviour
         }
 
         //첫패가 21이면 블랙잭이니 겜 시작할때 검출
-        BackJack();
+        StartCoroutine(BackJack());
         logText.text = "";
     }
 

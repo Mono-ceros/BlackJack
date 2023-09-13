@@ -4,45 +4,87 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
-    //애초에 딜러랑 붙고 옆테이플이랑 경쟁하는게 아니다보니
-    //우승 텍스테를 넣기가 애매하네 Winner winner chiken dinner
+    //포톤 서버 연결하고 db쓰고
+    //칩 갯수 랭킹 만들고
 
-    //db 승률 칩 
-    //칩 개수로 랭킹을 뽑아볼까
-    //최소 칩 1, 10, 100 방을 따로 만들어
     [Header("DisconnectPanel")]
     public InputField NickNameInput;
 
     [Header("LobbyPanel")]
+    public GameObject StartPanel;
+    public GameObject LoginPanel;
     public GameObject LobbyPanel;
+    public GameObject RankingPanel;
     public InputField RoomInput;
-    public Text WelcomeText;
-    public Text LobbyInfoText;
+    public Text IDText;
     public Button[] CellBtn;
     public Button PreviousBtn;
     public Button NextBtn;
 
     [Header("RoomPanel")]
     public GameObject RoomPanel;
-    public Text ListText;
     public Text RoomInfoText;
     public Text[] ChatText;
     public InputField ChatInput;
+    public Text logText;
 
     [Header("ETC")]
-    public Text StatusText;
     public PhotonView PV;
 
     List<RoomInfo> myList = new List<RoomInfo>();
     int currentPage = 1, maxPage, multiple;
 
+    #region 네트워크 아닌거
+    private void Awake()
+    {
+        //화면 사이즈
+        Screen.SetResolution(800, 800, false);
+    }
+
+    public void SoloBtn()
+    {
+        SceneManager.LoadScene("Blackjack");
+    }
+
+    public void MultiMode()
+    {
+        StartPanel.SetActive(false);
+        LoginPanel.SetActive(true);
+    }
+
+    public void BackStartBtn()
+    {
+        LoginPanel.SetActive(false);
+        StartPanel.SetActive(true);
+    }
+
+    public void BackLobbyBtn()
+    {
+        RankingPanel.SetActive(false);
+        LobbyPanel.SetActive(true);
+    }
+
+    public void RankingBtn()
+    {
+        LobbyPanel.SetActive(false);
+        RankingPanel.SetActive(true);
+    }
+
+    //게임종료버튼
+    public void EndApp()
+    {
+        Application.Quit();
+    }
+    #endregion
 
     #region 방리스트 갱신
     // ◀버튼 -2 , ▶버튼 -1 , 셀 숫자
+    // 스위치같은 느낌으로 변수마다 다른 동작 
     public void MyListClick(int num)
     {
         if (num == -2) --currentPage;
@@ -89,20 +131,19 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     #region 서버연결
 
-    //로비룸 시작이긴한데 이거를 여기로 옮겨올까
     //람다식은 익명 함수 결국 함수를 파라미터로 넣고싶을때 쓰는거
     //컴파일러가 알아서 유추해서 반환 타입도 필요없음
     //정의된곳에서만 쓰고 다른곳에서 호출할일이 없으니 접근제어자랑 이름도 필요없음
-    void Awake() => Screen.SetResolution(960, 540, false);
 
-    void Update()
+    public void Connect() 
     {
-        StatusText.text = PhotonNetwork.NetworkClientState.ToString();
-        //전체 플레이어 - 방에있는 플레이어 = 로비에 있는 플레이어
-        LobbyInfoText.text = (PhotonNetwork.CountOfPlayers - PhotonNetwork.CountOfPlayersInRooms) + "로비 / " + PhotonNetwork.CountOfPlayers + "접속";
+        if (NickNameInput.text == "")
+        {
+            logText.text = "아이디를 입력해주세요";
+            return;
+        }
+        PhotonNetwork.ConnectUsingSettings();
     }
-
-    public void Connect() => PhotonNetwork.ConnectUsingSettings();
 
     public override void OnConnectedToMaster() => PhotonNetwork.JoinLobby();
 
@@ -111,7 +152,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         LobbyPanel.SetActive(true);
         RoomPanel.SetActive(false);
         PhotonNetwork.LocalPlayer.NickName = NickNameInput.text;
-        WelcomeText.text = PhotonNetwork.LocalPlayer.NickName + "님 접속완료";
+        IDText.text = "아이디 : " + PhotonNetwork.LocalPlayer.NickName;
         myList.Clear();
     }
 
@@ -151,6 +192,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public override void OnJoinRandomFailed(short returnCode, string message) { RoomInput.text = ""; CreateRoom(); }
 
+    //방에 누가 들어올때 텍스트 갱신
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         RoomRenewal();
@@ -165,9 +207,10 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     void RoomRenewal()
     {
-        ListText.text = "";
         for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
-            ListText.text += PhotonNetwork.PlayerList[i].NickName + ((i + 1 == PhotonNetwork.PlayerList.Length) ? "" : ", ");
+        {
+            //"접속자 : " + PhotonNetwork.PlayerList[i].NickName + ((i + 1 == PhotonNetwork.PlayerList.Length) ? "" : ", ");
+        }
         RoomInfoText.text = PhotonNetwork.CurrentRoom.Name + " / " + PhotonNetwork.CurrentRoom.PlayerCount + "명 / " + PhotonNetwork.CurrentRoom.MaxPlayers + "최대";
     }
     #endregion
@@ -184,6 +227,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     void ChatRPC(string msg)
     {
         bool isInput = false;
+        //비어있는 텍스트칸에 채팅넣기
         for (int i = 0; i < ChatText.Length; i++)
             if (ChatText[i].text == "")
             {
@@ -193,7 +237,10 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             }
         if (!isInput) // 꽉차면 한칸씩 위로 올림
         {
-            for (int i = 1; i < ChatText.Length; i++) ChatText[i - 1].text = ChatText[i].text;
+            for (int i = 1; i < ChatText.Length; i++)
+            {
+                ChatText[i - 1].text = ChatText[i].text;
+            }
             ChatText[ChatText.Length - 1].text = msg;
         }
     }

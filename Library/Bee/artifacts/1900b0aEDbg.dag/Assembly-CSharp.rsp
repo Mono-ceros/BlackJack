@@ -394,6 +394,7 @@
 "Assets/Scripts/CardStackView.cs"
 "Assets/Scripts/CardView.cs"
 "Assets/Scripts/GameController.cs"
+"Assets/Scripts/MultiGameController.cs"
 "Assets/Scripts/NetworkManager.cs"
 -langversion:9.0
 

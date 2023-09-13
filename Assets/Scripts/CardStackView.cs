@@ -34,14 +34,14 @@ public class CardStackView : MonoBehaviour
     //카드프리팹 할당해주기
     public GameObject cardPrefab;
 
-    void Awake()
+    void OnEnable()
     {
         faceUpControl = new Dictionary<int, CardView>();
         deck = GetComponent<CardStack>();
         MakeDeckAndFaceUpUpdate();
 
         //이벤트에 콜백함수 추가
-        deck.CardRemoved += deck_CardRemoved;
+        deck.CardRemoved += Deck_CardRemoved;
         deck.CardAdded += P_D_CardAdded;
     }
 
@@ -81,19 +81,19 @@ public class CardStackView : MonoBehaviour
         float co = cardOffset * deck.CardCount;
         //생성된 카드 위치
         Vector3 temp = start + new Vector3(co, 0f);
-        //CardIndex 카드 생성
-        AddCard(temp, e.CardIndex, deck.CardCount);
+        //realCardIndex 카드 생성
+        AddCard(temp, e.realCardIndex, deck.CardCount);
     }
 
-    void deck_CardRemoved(object cardOwner, CardEventArgs e)
+    void Deck_CardRemoved(object cardOwner, CardEventArgs e)
     {
         //키에 값이 존재하면
-        if (faceUpControl.ContainsKey(e.CardIndex))
+        if (faceUpControl.ContainsKey(e.realCardIndex))
         {
             //카드 파괴(여기 있는 카드를 파괴하고 플레이어에게 생성해 카드를 뽑은것을 구현)
-            Destroy(faceUpControl[e.CardIndex].Card);
+            Destroy(faceUpControl[e.realCardIndex].Card);
 
-            faceUpControl.Remove(e.CardIndex);
+            faceUpControl.Remove(e.realCardIndex);
         }
     }
     #endregion
