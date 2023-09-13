@@ -14,6 +14,9 @@ public class MultiGameController : MonoBehaviourPunCallbacks
 
     int currentChip = 100;
     int highScore = 0;
+
+    bool isclick = true;
+
     //방에 따른 칩 배율
     //int roomclass = 1;
 
@@ -53,7 +56,7 @@ public class MultiGameController : MonoBehaviourPunCallbacks
     public Text highScoreText;
     public Text mulChipText;
 
-    bool isclick = true;
+    PhotonView pv;
 
     private void OnEnable()
     {
