@@ -16,6 +16,16 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     //로 PhotonView.RPC("함수명" 이런식으로 호출해야 딴데서 서버가 실행하고 반환함
     //포톤 트랜스폼 뷰같은걸 달고 연결해주면 트랜스폼은 따로 안해줘도 동기화해줌
 
+    static NetworkManager instance;
+    public static NetworkManager singleton
+    {
+        get
+        {
+            if (instance == null) { instance = new NetworkManager(); }
+            return instance;
+        }
+    }
+
     [Header("DisconnectPanel")]
     public InputField IDInput;
 
@@ -32,6 +42,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     [Header("RoomPanel")]
     public GameObject RoomPanel;
+    public GameObject ReadyButton;
+    public GameObject ReadyCancelButton;
     public Text RoomInfoText;
     public Text RoomNameText;
     public Text[] ChatText;
@@ -39,16 +51,21 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public Text logText;
 
     [Header("ETC")]
-    public PhotonView PV;
+    PhotonView PV;
 
     List<RoomInfo> myList = new List<RoomInfo>();
     int currentPage = 1, maxPage, multiple;
+
+    int playerReadyCount = 0;
+    bool isplayerReady = true;
 
     #region 네트워크 아닌거
     private void Awake()
     {
         //화면 사이즈
         Screen.SetResolution(800, 800, false);
+        DontDestroyOnLoad(this);
+        PV = GetComponent<PhotonView>();
     }
 
     public void SoloBtn()
@@ -78,6 +95,46 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         LobbyPanel.SetActive(false);
         RankingPanel.SetActive(true);
+    }
+
+    public void MultiPlay()
+    {
+        //이걸로 씬 로드해야 함께 이동하고
+        //나중에 들어온 유저도 동기화됨
+        //마스터 클라이언트에서 실행되면 어짜피 두번누른거나 마찬가지
+        //발상은 좋았는데 불값 토글방식을 바꿔야할듯
+        ReadyButton.SetActive(false);
+        ReadyCancelButton.SetActive(true);
+        photonView.RPC("ReadyCountrpc", RpcTarget.MasterClient);
+
+            if (playerReadyCount == PhotonNetwork.PlayerList.Length && PhotonNetwork.IsMasterClient)
+            { photonView.RPC("LoadMultiScene", RpcTarget.AllBuffered); }
+        
+    }
+
+    public void MultiPlayCancel()
+    {
+        ReadyCancelButton.SetActive(false);
+        ReadyButton.SetActive(true);
+        photonView.RPC("ReadyCancelrpc", RpcTarget.MasterClient);
+    }
+
+    [PunRPC]
+    void ReadyCountrpc()
+    {
+         playerReadyCount++;
+    }
+
+    [PunRPC]
+    void ReadyCancelrpc()
+    {
+        playerReadyCount--;
+    }
+
+    [PunRPC]
+    void LoadMultiScene()
+    {
+        PhotonNetwork.LoadLevel("Multiple");
     }
 
     //게임종료버튼
@@ -148,7 +205,10 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             logText.text = "아이디를 입력해주세요";
             return;
         }
+
         //서버에 연결
+        PhotonNetwork.GameVersion = "1.0";
+        PhotonNetwork.AutomaticallySyncScene = true;
         PhotonNetwork.ConnectUsingSettings();
     }
 
@@ -182,7 +242,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     //방만들기
     //방 이름 입력이 안되있으면 랜덤 생성
-    public void CreateRoom() => PhotonNetwork.CreateRoom(RoomInput.text == "" ? "Room" + Random.Range(0, 100) : RoomInput.text, new RoomOptions { MaxPlayers = 4 });
+    public void CreateRoom() => PhotonNetwork.CreateRoom(RoomInput.text == "" ? "테이블" + Random.Range(0, 100) : RoomInput.text, new RoomOptions { MaxPlayers = 4 });
 
     //빠른시작
     public void JoinRandomRoom() => PhotonNetwork.JoinRandomRoom();
@@ -202,11 +262,13 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     //방 생성 실패시(방제가 똑같을때나 서버연결이 불안정할떄)
     //다시 방 생성 시도
-    public override void OnCreateRoomFailed(short returnCode, string message) { RoomInput.text = ""; CreateRoom(); } 
+    public override void OnCreateRoomFailed(short returnCode, string message)
+    { RoomInput.text = ""; CreateRoom(); } 
 
     //빠른 입장 실패시(들어갈 수 있는 방이 하나도 없을때)
     //다시 방 생성 시도
-    public override void OnJoinRandomFailed(short returnCode, string message) { RoomInput.text = ""; CreateRoom(); }
+    public override void OnJoinRandomFailed(short returnCode, string message) 
+    { RoomInput.text = ""; CreateRoom(); }
 
     //방에 누가 들어올때 텍스트 갱신
     //누가 들어왔다고 알림 채팅

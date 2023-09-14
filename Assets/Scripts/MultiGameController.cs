@@ -8,6 +8,10 @@ using UnityEngine.SceneManagement;
 
 public class MultiGameController : MonoBehaviourPunCallbacks
 {
+    //동기화 해줘야하는거
+    //다같이 게임준비되면 실행
+    //
+
     //첫카드 검출하고 값 저장할 변수
     //숫자 저장해야해서 불 말고 인트
     int dealersFirstCard = -1;
@@ -39,6 +43,7 @@ public class MultiGameController : MonoBehaviourPunCallbacks
     public GameObject resultGroup;
     public GameObject playButtonPanel;
     public GameObject gameOverPanel;
+    public GameObject playInfotext;
     public CanvasGroup playRoleScroll;
     public GameObject x2;
     public GameObject x3;
@@ -58,7 +63,7 @@ public class MultiGameController : MonoBehaviourPunCallbacks
 
     PhotonView pv;
 
-    private void OnEnable()
+    new void OnEnable()
     {
         //최고기록 들고오기
         highScore = PlayerPrefs.GetInt("HighScore");
@@ -148,9 +153,10 @@ public class MultiGameController : MonoBehaviourPunCallbacks
         PlayAgain();
     }
 
-    public void SoloEnd()
+    public void MultiEnd()
     {
-        SceneManager.LoadScene("Lobby");
+        PhotonNetwork.LoadLevel("Lobby");
+        PhotonNetwork.LeaveRoom();
     }
 
     public void RoleRead()
@@ -175,6 +181,7 @@ public class MultiGameController : MonoBehaviourPunCallbacks
         deck.CreateDeck();
         dealersFirstCard = -1;
         //UI패널 변경
+        playInfotext.SetActive(false);
         ResultOff();
         betGroup.SetActive(true);
         soloEndButton.SetActive(true);
@@ -365,6 +372,10 @@ public class MultiGameController : MonoBehaviourPunCallbacks
         x3.SetActive(false);
     }
 
+    void PlayInfotextOn() 
+    {
+        playInfotext.SetActive(true);
+    }
     #endregion
 
     #region Dealer
@@ -469,13 +480,16 @@ public class MultiGameController : MonoBehaviourPunCallbacks
         bettingChipText.text = bettingChip.ToString();
         currentChipText.text = currentChip.ToString();
         PlayButtonOn();
+        PlayInfotextOn();
 
+        //플레이어가 몇명이나 있어
         //플래이어 딜러 카드 2장씩
         for (int i = 0; i < 2; i++)
         {
-            player.Draw(deck.DeckTop());
             HitDealer();
+        player.Draw(deck.DeckTop());
         }
+
 
         //첫패가 21이면 블랙잭이니 겜 시작할때 검출
         StartCoroutine(BackJack());

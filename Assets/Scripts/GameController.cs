@@ -468,8 +468,8 @@ public class GameController : MonoBehaviour
         //플래이어 딜러 카드 2장씩
         for (int i = 0; i < 2; i++)
         {
-            player.Draw(deck.DeckTop());
             HitDealer();
+            player.Draw(deck.DeckTop());
         }
 
         //첫패가 21이면 블랙잭이니 겜 시작할때 검출

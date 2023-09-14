@@ -38,7 +38,6 @@ public class CardStackView : MonoBehaviour
     {
         faceUpControl = new Dictionary<int, CardView>();
         deck = GetComponent<CardStack>();
-        MakeDeckAndFaceUpUpdate();
 
         //이벤트에 콜백함수 추가
         deck.CardRemoved += Deck_CardRemoved;

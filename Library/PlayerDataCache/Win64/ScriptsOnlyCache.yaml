@@ -5,6 +5,9 @@ ScriptsOnlyBuild:
     - CardStack
     - CardStackView
     - GameController
+    - MultiCardStack
+    - MultiCardStackView
+    - MultiGameController
     - NetworkManager
     ParticleImage.dll:
     - AssetKits.ParticleImage.ParticleImage
@@ -131,7 +134,13 @@ ScriptsOnlyBuild:
     methodName: MyListClick
   - assembly: Assembly-CSharp
     fullTypeName: NetworkManager
+    methodName: MultiPlayCancel
+  - assembly: Assembly-CSharp
+    fullTypeName: NetworkManager
     methodName: MyListClick
+  - assembly: Assembly-CSharp
+    fullTypeName: NetworkManager
+    methodName: MultiPlay
   - assembly: Assembly-CSharp
     fullTypeName: NetworkManager
     methodName: JoinRandomRoom
@@ -186,6 +195,27 @@ ScriptsOnlyBuild:
   - assembly: Assembly-CSharp
     fullTypeName: GameController
     methodName: NewGame
+  - assembly: Assembly-CSharp
+    fullTypeName: MultiGameController
+    methodName: Bet
+  - assembly: Assembly-CSharp
+    fullTypeName: MultiGameController
+    methodName: HitPlay
+  - assembly: Assembly-CSharp
+    fullTypeName: MultiGameController
+    methodName: MultiEnd
+  - assembly: Assembly-CSharp
+    fullTypeName: MultiGameController
+    methodName: PlayAgain
+  - assembly: Assembly-CSharp
+    fullTypeName: MultiGameController
+    methodName: NewGame
+  - assembly: Assembly-CSharp
+    fullTypeName: MultiGameController
+    methodName: RoleRead
+  - assembly: Assembly-CSharp
+    fullTypeName: MultiGameController
+    methodName: Stand
   sceneClasses:
     Assets/Scenes/Blackjack.unity:
     - Class: 1
@@ -237,13 +267,13 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 3726}
     - Class: 114
-      Script: {instanceID: 3890}
+      Script: {instanceID: 3892}
     - Class: 114
-      Script: {instanceID: 4114}
+      Script: {instanceID: 4116}
     - Class: 114
-      Script: {instanceID: 4296}
+      Script: {instanceID: 4298}
     - Class: 114
-      Script: {instanceID: 6388}
+      Script: {instanceID: 6390}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 124
@@ -346,29 +376,29 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 3728}
     - Class: 114
-      Script: {instanceID: 4114}
+      Script: {instanceID: 4116}
     - Class: 114
-      Script: {instanceID: 4296}
+      Script: {instanceID: 4298}
     - Class: 114
-      Script: {instanceID: 4510}
+      Script: {instanceID: 4512}
     - Class: 114
-      Script: {instanceID: 4866}
+      Script: {instanceID: 4868}
     - Class: 114
-      Script: {instanceID: 4956}
+      Script: {instanceID: 4958}
     - Class: 114
-      Script: {instanceID: 4960}
+      Script: {instanceID: 4962}
     - Class: 114
-      Script: {instanceID: 5184}
+      Script: {instanceID: 5186}
     - Class: 114
-      Script: {instanceID: 5234}
+      Script: {instanceID: 5236}
     - Class: 114
-      Script: {instanceID: 5778}
+      Script: {instanceID: 5780}
     - Class: 114
-      Script: {instanceID: 5996}
+      Script: {instanceID: 5998}
     - Class: 114
-      Script: {instanceID: 6358}
+      Script: {instanceID: 6360}
     - Class: 114
-      Script: {instanceID: 6454}
+      Script: {instanceID: 6456}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -388,6 +418,91 @@ ScriptsOnlyBuild:
     - Class: 198
       Script: {instanceID: 0}
     - Class: 199
+      Script: {instanceID: 0}
+    - Class: 213
+      Script: {instanceID: 0}
+    - Class: 222
+      Script: {instanceID: 0}
+    - Class: 223
+      Script: {instanceID: 0}
+    - Class: 224
+      Script: {instanceID: 0}
+    - Class: 225
+      Script: {instanceID: 0}
+    Assets/Scenes/Multiple.unity:
+    - Class: 1
+      Script: {instanceID: 0}
+    - Class: 4
+      Script: {instanceID: 0}
+    - Class: 20
+      Script: {instanceID: 0}
+    - Class: 21
+      Script: {instanceID: 0}
+    - Class: 28
+      Script: {instanceID: 0}
+    - Class: 48
+      Script: {instanceID: 0}
+    - Class: 81
+      Script: {instanceID: 0}
+    - Class: 104
+      Script: {instanceID: 0}
+    - Class: 114
+      Script: {instanceID: 1574}
+    - Class: 114
+      Script: {instanceID: 1576}
+    - Class: 114
+      Script: {instanceID: 1584}
+    - Class: 114
+      Script: {instanceID: 1586}
+    - Class: 114
+      Script: {instanceID: 1662}
+    - Class: 114
+      Script: {instanceID: 2030}
+    - Class: 114
+      Script: {instanceID: 2102}
+    - Class: 114
+      Script: {instanceID: 2370}
+    - Class: 114
+      Script: {instanceID: 2506}
+    - Class: 114
+      Script: {instanceID: 2686}
+    - Class: 114
+      Script: {instanceID: 2968}
+    - Class: 114
+      Script: {instanceID: 3140}
+    - Class: 114
+      Script: {instanceID: 3428}
+    - Class: 114
+      Script: {instanceID: 3498}
+    - Class: 114
+      Script: {instanceID: 3710}
+    - Class: 114
+      Script: {instanceID: 3720}
+    - Class: 114
+      Script: {instanceID: 3726}
+    - Class: 114
+      Script: {instanceID: 3792}
+    - Class: 114
+      Script: {instanceID: 4116}
+    - Class: 114
+      Script: {instanceID: 4298}
+    - Class: 114
+      Script: {instanceID: 6390}
+    - Class: 114
+      Script: {instanceID: 115424}
+    - Class: 114
+      Script: {instanceID: 115428}
+    - Class: 115
+      Script: {instanceID: 0}
+    - Class: 124
+      Script: {instanceID: 0}
+    - Class: 128
+      Script: {instanceID: 0}
+    - Class: 157
+      Script: {instanceID: 0}
+    - Class: 196
+      Script: {instanceID: 0}
+    - Class: 212
       Script: {instanceID: 0}
     - Class: 213
       Script: {instanceID: 0}
@@ -1086,6 +1201,12 @@ ScriptsOnlyBuild:
     className: CurrentRoomNameProperty
   - hash:
       serializedVersion: 2
+      Hash: ce933e3a6564afec7cc176df5daa92d1
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: MultiGameController
+  - hash:
+      serializedVersion: 2
       Hash: 8e6ceabfd38a184413d69b7db56c89cc
     assemblyName: UnityEngine.TestRunner.dll
     namespaceName: UnityEngine.TestTools
@@ -1386,7 +1507,7 @@ ScriptsOnlyBuild:
     className: ActivationTrack
   - hash:
       serializedVersion: 2
-      Hash: 020aacfba0bb5ffd85266941ace25250
+      Hash: f0f929dfe9cc8bfca7d6fb4711a5964d
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: NetworkManager
@@ -1848,12 +1969,19 @@ ScriptsOnlyBuild:
     className: UserIdUiForm
   - hash:
       serializedVersion: 2
-      Hash: 015466cdde57060a15613b84817424bc
+      Hash: 59786723a3c532d876042bbec4da38b9
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
-    className: MultiGameController
+    className: MultiCardStack
+  - hash:
+      serializedVersion: 2
+      Hash: 9b5aab561bd957d9fcc97c36476068d0
+    assemblyName: Assembly-CSharp.dll
+    namespaceName: 
+    className: MultiCardStackView
   platform: 19
   scenePathNames:
   - Assets/Scenes/Lobby.unity
   - Assets/Scenes/Blackjack.unity
+  - Assets/Scenes/Multiple.unity
   playerPath: "C:/Users/SAMSUNG/Desktop/\uBE14\uB799\uC7AD/Card Game.exe"
