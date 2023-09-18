@@ -45,7 +45,7 @@ public class MultiCardStack : MonoBehaviourPunCallbacks
         //덱 인스펙터창 isGameDeck만 트루로
         if (PhotonNetwork.IsMasterClient && isGameDeck)
         {
-            photonView.RPC("CreateDeck", RpcTarget.MasterClient);
+            photonView.RPC("CreateDeck", RpcTarget.Others);
         }
 	}
 

@@ -3,14 +3,14 @@ using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.UI;
-using AssetKits.ParticleImage;
-using UnityEngine.SceneManagement;
 
 public class MultiGameController : MonoBehaviourPunCallbacks
 {
     //동기화 해줘야하는거
     //다같이 게임준비되면 실행
-    //
+    //자기자신이 몇번쨰 플레이언지 확인하는 방법이 필요
+    //자기 턴일때만 히트버튼 활성화
+    //PhotonNetwork.LocalPlayer.
 
     //첫카드 검출하고 값 저장할 변수
     //숫자 저장해야해서 불 말고 인트
@@ -24,13 +24,13 @@ public class MultiGameController : MonoBehaviourPunCallbacks
     //방에 따른 칩 배율
     //int roomclass = 1;
 
-    public CardStack player;
+    public MultiCardStack[] player;
     public CardStack dealer;
-    public CardStack deck;
+    public MultiCardStack deck;
 
-    public CardStackView playerView;
+    public MultiCardStackView playerView;
     public CardStackView dealerView;
-    public CardStackView deckView;
+    public MultiCardStackView deckView;
 
     //하위 오브젝트가 많은것도 아니고, 생성 파괴를 하는것도 아니긴한데
     //무식하게 껏다켯다하는게 괜찮은지 모르겠네
@@ -97,7 +97,7 @@ public class MultiGameController : MonoBehaviourPunCallbacks
         hitButton.interactable = false;
         stickButton.interactable = false;
         //덱에서 뽑은 카드를 플레이어한테 추가
-        player.Draw(deck.DeckTop());
+        player[0].Draw(deck.DeckTop());
         yield return new WaitForSeconds(0.5f);
         //내 패 21넘었는지 체크
         Burst();
@@ -192,7 +192,7 @@ public class MultiGameController : MonoBehaviourPunCallbacks
     #region 게임결과
     void Burst()
     {
-        if (player.HandValue() > 21)
+        if (player[0].HandValue() > 21)
         {
             PlayButtonOff();
             SwitchResult(4);
@@ -203,7 +203,7 @@ public class MultiGameController : MonoBehaviourPunCallbacks
 
     IEnumerator BackJack()
     {
-        if (player.HandValue() == 21)
+        if (player[0].HandValue() == 21)
         {
             PlayButtonOff();
             dealerView.Toggle(dealersFirstCard, true);
@@ -229,15 +229,15 @@ public class MultiGameController : MonoBehaviourPunCallbacks
 
     void OutCome()
     {
-        if (dealer.HandValue() == player.HandValue())
+        if (dealer.HandValue() == player[0].HandValue())
         {
             SwitchResult(1);
         }
-        else if (dealer.HandValue() > player.HandValue() && dealer.HandValue() <= 21)
+        else if (dealer.HandValue() > player[0].HandValue() && dealer.HandValue() <= 21)
         {
             SwitchResult(0);
         }
-        else if (dealer.HandValue() > 21 || player.HandValue() > dealer.HandValue())
+        else if (dealer.HandValue() > 21 || player[0].HandValue() > dealer.HandValue())
         {
             SwitchResult(2);
         }
@@ -332,7 +332,7 @@ public class MultiGameController : MonoBehaviourPunCallbacks
 
     void ResultOn()
     {
-        playerHandValueText.text = player.HandValue().ToString();
+        playerHandValueText.text = player[0].HandValue().ToString();
         dealerHandValueText.text = dealer.HandValue().ToString();
         resultGroup.SetActive(true);
     }
@@ -420,13 +420,13 @@ public class MultiGameController : MonoBehaviourPunCallbacks
             StartCoroutine(IsGameOver());
             yield return new WaitForSeconds(1.5f);
         }
-        else if(player.CardCount >= 5)
+        else if(player[0].CardCount >= 5)
         {
             SwitchResult(6);
             StartCoroutine(IsGameOver());
             yield return new WaitForSeconds(1.5f);
         }
-        else if (dealer.HandValue() > player.HandValue())
+        else if (dealer.HandValue() > player[0].HandValue())
         {
             SwitchResult(0);
             StartCoroutine(IsGameOver());
@@ -439,7 +439,7 @@ public class MultiGameController : MonoBehaviourPunCallbacks
             {
                 HitDealer();
                 //17이 안됐는데 버스트되지 않게 딜러가 이겨있으면 패배
-                if (dealer.HandValue() > player.HandValue() && dealer.HandValue() <= 21)
+                if (dealer.HandValue() > player[0].HandValue() && dealer.HandValue() <= 21)
                 {
                     SwitchResult(0);
                     StartCoroutine(IsGameOver());
@@ -487,9 +487,11 @@ public class MultiGameController : MonoBehaviourPunCallbacks
         for (int i = 0; i < 2; i++)
         {
             HitDealer();
-        player.Draw(deck.DeckTop());
+        player[0].Draw(deck.DeckTop());
         }
-
+        //플레이어 덱을 여러개 만들기
+        //널이 아니고 리스트 불이 트루일떄 
+        //player.Draw(deck.DeckTop());
 
         //첫패가 21이면 블랙잭이니 겜 시작할때 검출
         StartCoroutine(BackJack());

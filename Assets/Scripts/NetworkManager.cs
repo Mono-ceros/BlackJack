@@ -5,7 +5,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-
+using Photon.Pun.UtilityScripts;
 
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
@@ -50,9 +50,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public InputField ChatInput;
     public Text logText;
 
-    [Header("ETC")]
-    PhotonView PV;
-
     List<RoomInfo> myList = new List<RoomInfo>();
     int currentPage = 1, maxPage, multiple;
 
@@ -65,7 +62,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         //화면 사이즈
         Screen.SetResolution(800, 800, false);
         DontDestroyOnLoad(this);
-        PV = GetComponent<PhotonView>();
     }
 
     public void SoloBtn()
@@ -242,7 +238,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     //방만들기
     //방 이름 입력이 안되있으면 랜덤 생성
-    public void CreateRoom() => PhotonNetwork.CreateRoom(RoomInput.text == "" ? "테이블" + Random.Range(0, 100) : RoomInput.text, new RoomOptions { MaxPlayers = 4 });
+    public void CreateRoom()
+    {
+        //방제가 비어있으면 랜덤 이름 아니면 쳐진 이름
+        PhotonNetwork.CreateRoom(RoomInput.text == "" ? "테이블" + Random.Range(0, 100) : RoomInput.text, new RoomOptions { MaxPlayers = 4 });
+    } 
 
     //빠른시작
     public void JoinRandomRoom() => PhotonNetwork.JoinRandomRoom();
@@ -282,7 +282,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         RoomRenewal();
-        ChatRPC("<color=yellow>" + otherPlayer.NickName + "님이 퇴장하셨습니다</color>");
+        ChatRPC("<color=red>" + otherPlayer.NickName + "님이 퇴장하셨습니다</color>");
     }
 
     void RoomRenewal()
@@ -302,7 +302,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     //채팅 보내기 버튼
     public void Send()
     {
-        PV.RPC("ChatRPC", RpcTarget.AllBuffered, PhotonNetwork.NickName + " : " + ChatInput.text);
+        photonView.RPC("ChatRPC", RpcTarget.All, PhotonNetwork.NickName + " : " + ChatInput.text);
         ChatInput.text = "";
     }
 

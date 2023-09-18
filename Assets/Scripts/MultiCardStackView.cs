@@ -11,14 +11,11 @@ public class MultiCardStackView : MonoBehaviourPunCallbacks
     //함수 이름이 직관적이냐 아니냐 이것만으로도
     //코드를 읽는데 걸리는 시간이 엄청나게 차이나는듯
 
-    //덱이랑 P,D랑 쓰는 함수가 거의 정해져있어서
-    //스크립트를 분리해도 될거같긴한데
-
     //CardStack이랑 CardStackView는 한 오브젝트에 같이 넣어줌
     //덱의 CardStack, 플레이어의 CardStack, 딜러의 CardStack
     MultiCardStack deck;
 
-    //Toggle에서 isfaceUp Control용
+    //Toggle에서 isfaceUp 컨트롤용
     Dictionary<int, CardView> faceUpControl;
     
     //덱 플레이어 딜러의 카드 위치. 인스펙터창에서 수치 변경
@@ -32,13 +29,12 @@ public class MultiCardStackView : MonoBehaviourPunCallbacks
     public bool makefaceUp = false;
     public bool decksorting = false;
 
-    //카드프리팹 할당해주기
-    public GameObject cardPrefab;
-
     new void OnEnable()
     {
         faceUpControl = new Dictionary<int, CardView>();
         deck = GetComponent<MultiCardStack>();
+        //임마 어떻게 해야함
+        //안건들면 임마가 덱 만듬
         MakeDeckAndFaceUpUpdate();
 
         //이벤트에 콜백함수 추가
@@ -142,7 +138,7 @@ public class MultiCardStackView : MonoBehaviourPunCallbacks
         }
 
         //여기서 카드 Instantiate
-        GameObject cardCopy = Instantiate(cardPrefab);
+        GameObject cardCopy = PhotonNetwork.Instantiate("Card", Vector3.zero, Quaternion.identity);
         cardCopy.transform.position = position;
 
         //만들어진 카드 오브젝트의 카드 모델 스크립트 참조
