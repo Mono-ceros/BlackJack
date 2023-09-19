@@ -33,9 +33,6 @@ public class MultiCardStackView : MonoBehaviourPunCallbacks
     {
         faceUpControl = new Dictionary<int, CardView>();
         deck = GetComponent<MultiCardStack>();
-        //임마 어떻게 해야함
-        //안건들면 임마가 덱 만듬
-        MakeDeckAndFaceUpUpdate();
 
         //이벤트에 콜백함수 추가
         deck.CardRemoved += Deck_CardRemoved;

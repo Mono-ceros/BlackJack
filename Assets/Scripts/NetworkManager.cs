@@ -6,6 +6,7 @@ using Photon.Realtime;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using Photon.Pun.UtilityScripts;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
@@ -13,18 +14,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     //포톤 뷰 컴포넌트가 똑같이 동기화를 해줌
     //근데 동기화 하고싶은 함수에
     //PunRPC(Remote Procedure Call)원격 프로시저(함수의 하위 개념) 호출
-    //로 PhotonView.RPC("함수명" 이런식으로 호출해야 딴데서 서버가 실행하고 반환함
-    //포톤 트랜스폼 뷰같은걸 달고 연결해주면 트랜스폼은 따로 안해줘도 동기화해줌
+    //로 PhotonView.RPC("함수명" 이런식으로 호출해야 서버가 실행하고
+    //다른 클라이언트에 반환함
 
-    static NetworkManager instance;
-    public static NetworkManager singleton
-    {
-        get
-        {
-            if (instance == null) { instance = new NetworkManager(); }
-            return instance;
-        }
-    }
+    //방에서 나와서 다시 로비씬을 불러올때 날라가는 닉네임이나 데이터들은
+    //db를 연결해서 해결하는게 나을듯
 
     [Header("DisconnectPanel")]
     public InputField IDInput;
@@ -43,6 +37,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     [Header("RoomPanel")]
     public GameObject RoomPanel;
     public GameObject ReadyButton;
+    public Button ReadyButtonactive;
     public GameObject ReadyCancelButton;
     public Text RoomInfoText;
     public Text RoomNameText;
@@ -61,10 +56,55 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         //화면 사이즈
         Screen.SetResolution(800, 800, false);
-        DontDestroyOnLoad(this);
     }
 
-    public void SoloBtn()
+    //유니티 onenable이 포톤의 onenable을 잡아먹으면서 제대로 실행이 안됨
+    // new void OnEnable()
+    //{
+    //    //if (PhotonNetwork.IsMasterClient)
+    //    //{
+    //    //    ReadyButtonactive.interactable = false;
+    //    //}
+    //    PhotonNetwork.LocalPlayer.NickName = IDInput.text;
+    //    IDText.text = "아이디 : " + PhotonNetwork.LocalPlayer.NickName;
+    //}
+
+    private void Update()
+    {
+        Debug.Log(PhotonNetwork.IsMasterClient);
+        //    //방장 레디 버튼 마지막에 활성화
+        //    if (PhotonNetwork.IsMasterClient && (PhotonNetwork.PlayerList.Length - 1 == playerReadyCount))
+        //    {
+        //        ReadyButtonactive.interactable = true;
+        //    }ㄴ
+
+        //    //몇번째 플레이언지 검출
+        //    if (PhotonNetwork.LocalPlayer == PhotonNetwork.PlayerList[0])
+        //    {
+
+        //    }
+        //    else if (PhotonNetwork.LocalPlayer == PhotonNetwork.PlayerList[1])
+        //    {
+
+        //    }
+        //    else if (PhotonNetwork.LocalPlayer == PhotonNetwork.PlayerList[2])
+        //    {
+
+        //    }
+        //PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable() { {"RoomState", "Waiting" } });
+
+        //switch(PhotonNetwork.CurrentRoom.CustomProperties["Player"])
+        //{
+        //    case 1:
+        //        break;
+
+        //}
+
+    }
+
+
+
+        public void SoloBtn()
     {
         SceneManager.LoadScene("Blackjack");
     }
@@ -95,17 +135,16 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public void MultiPlay()
     {
-        //이걸로 씬 로드해야 함께 이동하고
-        //나중에 들어온 유저도 동기화됨
-        //마스터 클라이언트에서 실행되면 어짜피 두번누른거나 마찬가지
-        //발상은 좋았는데 불값 토글방식을 바꿔야할듯
+        //불값 토글방식을 바꿔야할듯 마스터 클라이언트에서 실행되면 어짜피 두번누른거나 마찬가지
+        //플레이어 레디하면 인트로 더해서 PlayerList.Length랑 비교
+        //카운트는 호스트만 더해지니까 호스트가 레디를 늦게 눌러야 씬이 실행됨
         ReadyButton.SetActive(false);
         ReadyCancelButton.SetActive(true);
         photonView.RPC("ReadyCountrpc", RpcTarget.MasterClient);
 
-            if (playerReadyCount == PhotonNetwork.PlayerList.Length && PhotonNetwork.IsMasterClient)
-            { photonView.RPC("LoadMultiScene", RpcTarget.AllBuffered); }
-        
+        if (playerReadyCount == PhotonNetwork.PlayerList.Length)
+        { photonView.RPC("LoadMultiScene", RpcTarget.All); }
+
     }
 
     public void MultiPlayCancel()
@@ -118,7 +157,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void ReadyCountrpc()
     {
-         playerReadyCount++;
+        playerReadyCount++;
     }
 
     [PunRPC]
@@ -130,6 +169,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     [PunRPC]
     void LoadMultiScene()
     {
+        //이걸로 씬 로드해야 함께 이동하고
+        //나중에 들어온 유저도 동기화됨
         PhotonNetwork.LoadLevel("Multiple");
     }
 
@@ -194,17 +235,14 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     //정의된곳에서만 쓰고 다른곳에서 호출할일이 없으니 접근제어자랑 이름도 필요없음
 
     //로그인 버튼
-    public void Connect() 
+    public void Connect()
     {
         if (IDInput.text == "")
         {
             logText.text = "아이디를 입력해주세요";
             return;
         }
-
-        //서버에 연결
-        PhotonNetwork.GameVersion = "1.0";
-        PhotonNetwork.AutomaticallySyncScene = true;
+        //서버 연결
         PhotonNetwork.ConnectUsingSettings();
     }
 
@@ -221,9 +259,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         myList.Clear();
     }
 
+    //PhotonNetwork.SetPlayerCustomProperties(new Hashtable() { { "Roomstate", "Wating" } });
     //서버 접속 종료
     //로비패널의 엑스버튼
-    public void Disconnect() => PhotonNetwork.Disconnect();
+    public void Disconnect()
+    => PhotonNetwork.Disconnect();
 
     //서버 연결 종료시
     public override void OnDisconnected(DisconnectCause cause)
@@ -241,14 +281,16 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public void CreateRoom()
     {
         //방제가 비어있으면 랜덤 이름 아니면 쳐진 이름
-        PhotonNetwork.CreateRoom(RoomInput.text == "" ? "테이블" + Random.Range(0, 100) : RoomInput.text, new RoomOptions { MaxPlayers = 4 });
-    } 
+        PhotonNetwork.CreateRoom(RoomInput.text == "" ? "방" + Random.Range(0, 100) : RoomInput.text, new RoomOptions { MaxPlayers = 3 });
+    }
 
     //빠른시작
-    public void JoinRandomRoom() => PhotonNetwork.JoinRandomRoom();
+    public void JoinRandomRoom()
+    => PhotonNetwork.JoinRandomRoom();
 
     //방나가기버튼
-    public void LeaveRoom() => PhotonNetwork.LeaveRoom();
+    public void LeaveRoom()
+    => PhotonNetwork.LeaveRoom();
 
     //방 접속 메서드들 오버라이드
     //방 접속 성공시
@@ -258,12 +300,13 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         RoomRenewal();
         ChatInput.text = "";
         for (int i = 0; i < ChatText.Length; i++) ChatText[i].text = "";
+        
     }
 
     //방 생성 실패시(방제가 똑같을때나 서버연결이 불안정할떄)
     //다시 방 생성 시도
     public override void OnCreateRoomFailed(short returnCode, string message)
-    { RoomInput.text = ""; CreateRoom(); } 
+    { RoomInput.text = ""; CreateRoom(); }
 
     //빠른 입장 실패시(들어갈 수 있는 방이 하나도 없을때)
     //다시 방 생성 시도

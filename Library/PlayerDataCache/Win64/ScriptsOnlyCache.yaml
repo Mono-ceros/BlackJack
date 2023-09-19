@@ -263,6 +263,8 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 3498}
     - Class: 114
+      Script: {instanceID: 3710}
+    - Class: 114
       Script: {instanceID: 3720}
     - Class: 114
       Script: {instanceID: 3726}
@@ -1205,7 +1207,7 @@ ScriptsOnlyBuild:
     className: CurrentRoomNameProperty
   - hash:
       serializedVersion: 2
-      Hash: 9791fdae861d10cd4f3a2224462bdcd3
+      Hash: 612419eaa6d5209c564b7b18d6714c3d
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: MultiGameController
@@ -1511,7 +1513,7 @@ ScriptsOnlyBuild:
     className: ActivationTrack
   - hash:
       serializedVersion: 2
-      Hash: f0f929dfe9cc8bfca7d6fb4711a5964d
+      Hash: 69e8a3a2fd253d4d4a70de5600bdd6c2
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: NetworkManager

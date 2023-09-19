@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
@@ -6,6 +7,7 @@ using UnityEngine.UI;
 
 public class MultiGameController : MonoBehaviourPunCallbacks
 {
+
     //동기화 해줘야하는거
     //다같이 게임준비되면 실행
     //자기자신이 몇번쨰 플레이언지 확인하는 방법이 필요
@@ -28,7 +30,7 @@ public class MultiGameController : MonoBehaviourPunCallbacks
     public CardStack dealer;
     public MultiCardStack deck;
 
-    public MultiCardStackView playerView;
+    public MultiCardStackView[] playerView;
     public CardStackView dealerView;
     public MultiCardStackView deckView;
 
@@ -61,12 +63,11 @@ public class MultiGameController : MonoBehaviourPunCallbacks
     public Text highScoreText;
     public Text mulChipText;
 
-    PhotonView pv;
-
     new void OnEnable()
     {
         //최고기록 들고오기
         highScore = PlayerPrefs.GetInt("HighScore");
+        //저장된값 0되면 100개로 리셋
         if(PlayerPrefs.GetInt("CurrentChip") == 0)
         {
             currentChip = 100;
@@ -153,6 +154,7 @@ public class MultiGameController : MonoBehaviourPunCallbacks
         PlayAgain();
     }
 
+    //언놈은 혼자나가지고 언놈은 같이 나가지고
     public void MultiEnd()
     {
         PhotonNetwork.LoadLevel("Lobby");
@@ -175,7 +177,29 @@ public class MultiGameController : MonoBehaviourPunCallbacks
         mulChipText.text = "";
         currentChipText.text = currentChip.ToString();
         //게임 초기화
-        playerView.Clear();
+        playerView[0].Clear();
+        dealerView.Clear();
+        deckView.Clear();
+        //덱 생성을 호스트만 해야하지않나
+        deck.CreateDeck();
+        dealersFirstCard = -1;
+        //UI패널 변경
+        playInfotext.SetActive(false);
+        ResultOff();
+        betGroup.SetActive(true);
+        soloEndButton.SetActive(true);
+        //일단 똑바로 동작이 안됨
+        //photonView.RPC("PlayAgainRPC", RpcTarget.All);
+    }
+
+    [PunRPC]
+    public void PlayAgainRPC()
+    {
+        bettingChipText.text = "0";
+        mulChipText.text = "";
+        currentChipText.text = currentChip.ToString();
+        //게임 초기화
+        playerView[0].Clear();
         dealerView.Clear();
         deckView.Clear();
         deck.CreateDeck();

@@ -35,6 +35,10 @@ public class MultiCardStack : MonoBehaviourPunCallbacks
 
     public event CardEvent CardAdded;
 
+    public event Action CardSuffle;
+
+    int suffleindex1, suffleindex2, n ;
+
 
 	new void OnEnable() 
     {
@@ -43,9 +47,10 @@ public class MultiCardStack : MonoBehaviourPunCallbacks
 
         //덱만 실행해야함
         //덱 인스펙터창 isGameDeck만 트루로
-        if (PhotonNetwork.IsMasterClient && isGameDeck)
+        //호스트만 모두에게 실행해서 공통된 덱 하나 생성
+        if (isGameDeck)
         {
-            photonView.RPC("CreateDeck", RpcTarget.Others);
+            photonView.RPC("CreateDeck", RpcTarget.All);
         }
 	}
 
@@ -90,21 +95,40 @@ public class MultiCardStack : MonoBehaviourPunCallbacks
             cards.Add(i);
         }
 
-        //덱 셔플
-        for (int n = cards.Count - 1; n > 1; n--)
+        n = cards.Count - 1;
+
+        if (PhotonNetwork.IsMasterClient)
         {
-            //변수하나 더 만들어서 값 저장해놓고
-            //두번 섞음
-            int k = Random.Range(0, n + 1);
-            int l = Random.Range(0, n + 1);
-            int savek = cards[k];
-            cards[k] = cards[n];
-            cards[n] = cards[l];
-            cards[l] = savek;
+            while (n > 1)
+            {
+                //덱 셔플
+                //변수하나 더 만들어서 값 저장해놓고
+                //두번 섞음
+                if (PhotonNetwork.IsMasterClient)
+                {
+                    suffleindex1 = Random.Range(0, n + 1);
+                    suffleindex2 = Random.Range(0, n + 1);
+                }
+
+                //랜덤값을 다른 클라이언트들도 똑같이 받기위해서 호스트가 만든 랜덤값을
+                //저장할 함수 호출
+                photonView.RPC("DeckSuffleint", RpcTarget.Others, suffleindex1, suffleindex2);
+                int saveindex1 = cards[suffleindex1];
+                cards[suffleindex1] = cards[n];
+                cards[n] = cards[suffleindex2];
+                cards[suffleindex2] = saveindex1;
+                n--;
+            }
         }
         multicardStackView.MakeDeckAndFaceUpUpdate();
     }
 
+    [PunRPC]
+    public void DeckSuffleint(int k, int f)
+    {
+        suffleindex1 = k;
+        suffleindex2 = f;
+    }
 
 
     /// <summary>
