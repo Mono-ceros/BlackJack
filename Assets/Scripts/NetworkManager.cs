@@ -76,29 +76,39 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         //    if (PhotonNetwork.IsMasterClient && (PhotonNetwork.PlayerList.Length - 1 == playerReadyCount))
         //    {
         //        ReadyButtonactive.interactable = true;
-        //    }ㄴ
-
-        //    //몇번째 플레이언지 검출
-        //    if (PhotonNetwork.LocalPlayer == PhotonNetwork.PlayerList[0])
-        //    {
-
         //    }
-        //    else if (PhotonNetwork.LocalPlayer == PhotonNetwork.PlayerList[1])
-        //    {
 
-        //    }
-        //    else if (PhotonNetwork.LocalPlayer == PhotonNetwork.PlayerList[2])
-        //    {
+        //방에서 몇번째 플레이언지 검출하고 프로퍼티 주기
+        //따로 rpc로 만들어서 누가 방 입출할떄마다 한번씩 갱신해주기
+        if (PhotonNetwork.LocalPlayer == PhotonNetwork.PlayerList[0])
+        {
+            //커스텀 프로퍼티 달아서 
 
-        //    }
-        //PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable() { {"RoomState", "Waiting" } });
+        }
+        else if (PhotonNetwork.LocalPlayer == PhotonNetwork.PlayerList[1])
+        {
 
-        //switch(PhotonNetwork.CurrentRoom.CustomProperties["Player"])
-        //{
-        //    case 1:
-        //        break;
+        }
+        else if (PhotonNetwork.LocalPlayer == PhotonNetwork.PlayerList[2])
+        {
 
-        //}
+        }
+
+        //방 상태가 게임이 진행중인지 아닌지 커스텀 프로퍼티로 확인해서
+        //방 입장 여부를 결정
+        PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable() { { "RoomState", "Waiting" } });
+        PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable() { { "RoomState", "Play" } });
+
+        switch (PhotonNetwork.CurrentRoom.CustomProperties["RoomState"])
+        {
+            case "Waiting":
+
+                break;
+            case "Play":
+
+                break;
+
+        }
 
     }
 

@@ -115,6 +115,18 @@ public class CardStackView : MonoBehaviour
                 cardCount++;
             }
         }
+        //
+
+        
+
+        //while (denom2 == 0)
+        //{
+        //    n1 = denom2; n2 = denom1 % denom2;
+        //    denom1 = n1; denom2 = n2;
+        //}
+
+        //return new int[] {(c * (b/denom1)) + (d * (a/denom1)),
+        //                  a*b/denom1};
     }
 
     /// <summary>

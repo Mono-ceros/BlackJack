@@ -5,10 +5,6 @@ using System;
 using Random = UnityEngine.Random;
 using Photon.Pun;
 
-/// <summary>
-/// 세줄요약
-/// 덱, 플레이어, 딜러에 넣어줄 스크립트
-/// </summary>
 public class MultiCardStack : MonoBehaviourPunCallbacks
 {
     //arraylist 좀 히튼데
@@ -37,7 +33,7 @@ public class MultiCardStack : MonoBehaviourPunCallbacks
 
     public event Action CardSuffle;
 
-    int suffleindex1, suffleindex2, n ;
+    int suffleindex1, suffleindex2, n;
 
 
 	new void OnEnable() 
@@ -45,12 +41,33 @@ public class MultiCardStack : MonoBehaviourPunCallbacks
         cards = new List<int>();
         multicardStackView = GetComponent<MultiCardStackView>();
 
-        //덱만 실행해야함
+        //덱만 실행해야함 
         //덱 인스펙터창 isGameDeck만 트루로
         //호스트만 모두에게 실행해서 공통된 덱 하나 생성
         if (isGameDeck)
         {
-            photonView.RPC("CreateDeck", RpcTarget.All);
+            //덱 리스트 날리기
+            cards.Clear();
+
+            //덱 리스트에 값 넣어주기
+            //0~51
+            //awake에서 한번 돌리기때문에 리스트 널안됨
+            for (int i = 0; i < 52; i++)
+            {
+                cards.Add(i);
+            }
+
+            n = cards.Count - 1;
+
+
+            if (PhotonNetwork.IsMasterClient)
+            {
+                while (n > 1)
+                {
+                    photonView.RPC("CreateDeck", RpcTarget.All);
+                }
+            }
+            multicardStackView.MakeDeckAndFaceUpUpdate();
         }
 	}
 
@@ -64,7 +81,6 @@ public class MultiCardStack : MonoBehaviourPunCallbacks
     /// 널일때 0반환
     /// </summary>
     public int CardCount
-
     {
         get
         {
@@ -84,43 +100,23 @@ public class MultiCardStack : MonoBehaviourPunCallbacks
     [PunRPC]
     public void CreateDeck()
     {
-        //덱 리스트 날리기
-        cards.Clear();
-
-        //덱 리스트에 값 넣어주기
-        //0~51
-        //awake에서 한번 돌리기때문에 리스트 널안됨
-        for (int i = 0; i < 52; i++)
-        {
-            cards.Add(i);
-        }
-
-        n = cards.Count - 1;
-
+        //덱 셔플
+        //변수하나 더 만들어서 값 저장해놓고
+        //두번 섞음
         if (PhotonNetwork.IsMasterClient)
         {
-            while (n > 1)
-            {
-                //덱 셔플
-                //변수하나 더 만들어서 값 저장해놓고
-                //두번 섞음
-                if (PhotonNetwork.IsMasterClient)
-                {
-                    suffleindex1 = Random.Range(0, n + 1);
-                    suffleindex2 = Random.Range(0, n + 1);
-                }
-
-                //랜덤값을 다른 클라이언트들도 똑같이 받기위해서 호스트가 만든 랜덤값을
-                //저장할 함수 호출
-                photonView.RPC("DeckSuffleint", RpcTarget.Others, suffleindex1, suffleindex2);
-                int saveindex1 = cards[suffleindex1];
-                cards[suffleindex1] = cards[n];
-                cards[n] = cards[suffleindex2];
-                cards[suffleindex2] = saveindex1;
-                n--;
-            }
+            suffleindex1 = Random.Range(0, n + 1);
+            suffleindex2 = Random.Range(0, n + 1);
         }
-        multicardStackView.MakeDeckAndFaceUpUpdate();
+
+        //랜덤값을 다른 클라이언트들도 똑같이 받기위해서 호스트가 만든 랜덤값을
+        //저장할 함수 호출
+        photonView.RPC("DeckSuffleint", RpcTarget.Others, suffleindex1, suffleindex2);
+        int saveindex1 = cards[suffleindex1];
+        cards[suffleindex1] = cards[n];
+        cards[n] = cards[suffleindex2];
+        cards[suffleindex2] = saveindex1;
+        n--;
     }
 
     [PunRPC]
@@ -186,7 +182,6 @@ public class MultiCardStack : MonoBehaviourPunCallbacks
     /// <param name="card"></param>
     public void Draw(int card)
     {
-
         cards.Add(card);
 
         //델리케이트를 지역변수안에 담음으로서

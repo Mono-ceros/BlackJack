@@ -12,8 +12,6 @@ public class GameController : MonoBehaviour
 
     int currentChip = 100;
     int highScore = 0;
-    //방에 따른 칩 배율
-    //int roomclass = 1;
 
     public CardStack player;
     public CardStack dealer;
@@ -23,8 +21,6 @@ public class GameController : MonoBehaviour
     public CardStackView dealerView;
     public CardStackView deckView;
 
-    //하위 오브젝트가 많은것도 아니고, 생성 파괴를 하는것도 아니긴한데
-    //무식하게 껏다켯다하는게 괜찮은지 모르겠네
     [Header("UI")]
     public Button hitButton;
     public Button stickButton;
@@ -57,7 +53,8 @@ public class GameController : MonoBehaviour
     {
         //최고기록 들고오기
         highScore = PlayerPrefs.GetInt("HighScore");
-        if(PlayerPrefs.GetInt("CurrentChip") == 0)
+        //저장된값 0되면 100개로 리셋
+        if (PlayerPrefs.GetInt("CurrentChip") == 0)
         {
             currentChip = 100;
         }
@@ -76,11 +73,6 @@ public class GameController : MonoBehaviour
         StartCoroutine(Hit());
     }
 
-    //내 패가 12인경우라도 : 딜러 공개패 4,5,6일시 스탑
-    //내 패가 13~16 : 딜러 공개패 2~6일떄 스탑(딜러 버스트 확률이 높기 때문)
-    //내 패가 17~20 : 딜러 공개패가 9~a이고 내 패에 11점의 a가 있을시 히트
-
-    //내 패가 10,11일시 한장만 더 받는다는 조건으로 판돈 두배(더블다운)하는게 유리
     IEnumerator Hit()
     {
         //실행되는동안 버튼 비활성화
